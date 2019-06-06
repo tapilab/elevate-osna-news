@@ -32,6 +32,7 @@ setup(
     entry_points={
         'console_scripts': [
             'osna=osna.cli:main',
+            'web=osna.cli:web',
         ],
     },
     install_requires=requirements,
@@ -40,7 +41,7 @@ setup(
     include_package_data=True,
     keywords='elevate_osna',
     name='elevate_osna',
-    packages=find_packages(include=['osna']),
+    packages=find_packages(include=['osna', 'osna.app', 'osna.app.templates']),
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,

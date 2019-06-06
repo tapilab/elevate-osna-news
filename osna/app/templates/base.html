@@ -1,0 +1,29 @@
+<html>
+    <head>
+      {% if title %}
+      <title>{{ title }} - osna</title>
+      {% else %}
+      <title>osna</title>
+      {% endif %}
+    </head>
+    <body>
+        <div>osna project</div>
+        <hr>
+        {% if form.errors %}
+        {{ form.errors }}
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        <br>
+    </body>
+</html>

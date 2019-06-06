@@ -4,15 +4,13 @@
 import sys
 import click
 
+from . import credentials_path, config
 
-@click.command()
+@click.group()
 def main(args=None):
-    """Console script for elevate_osna."""
-    click.echo("Replace this message by putting your code into "
-               "osna.cli.main")
-    click.echo("See click documentation at http://click.pocoo.org/")
+    """Console script for osna."""
+    click.echo("See Click documentation at http://click.pocoo.org/")
     return 0
-
 
 @main.command('web')
 @click.option('-t', '--twitter-credentials', required=False, type=click.Path(exists=True), show_default=True, default=credentials_path, help='a json file of twitter tokens')
