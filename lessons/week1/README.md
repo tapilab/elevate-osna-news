@@ -104,7 +104,7 @@ The goal's for this lab are to:
 2. Add the names of your team members to your web site on the line that says "osna project"
 3. Modify `osna/app/static/main.css` to make all labels of the form blue (e.g., the word "input" on the form should become blue).
 
-**Tips:**: 
+**Tips:**
 - Some web browsers will cache the page, which will sometimes make it hard to see the updates you make. You may have to force a refresh that ignores the cache (e.g. see [here for Chrome](https://superuser.com/questions/89809/how-to-force-refresh-without-cache-in-google-chrome)).
 
 
