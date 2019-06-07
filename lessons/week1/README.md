@@ -34,8 +34,7 @@ You should have been assigned a project repository for your work. In the example
 Your repository has been setup with a lot of starter code so you can get started more easily. To use it, do the following:
 
 1. Make sure you've completed all the course **Prerequisites** listed on the [README](https://github.com/tapilab/elevate-osna-starter) in `elevate-osna-starter`/
-2. Clone your repo:  
-`git clone https://github.com/tapilab/elevate-osna-team1`
+2. Clone your repo:  `git clone https://github.com/tapilab/elevate-osna-team1`
 3. Start a [virtual environment](https://virtualenv.pypa.io/en/stable/).
   - First, make sure you have virtual env installed. `pip install virtualenv`
   - Next, outside of the team repository, create a new virtual environment folder by `virtualenv osna-virtual`. 
@@ -50,7 +49,7 @@ python setup.py develop # install the code.
 This may take a while, as all dependencies listed in the `requirements.txt` file will also be installed.
 
 5. If everything worked properly, you should now be able to run your project's command-line tool:  
-``osna --help
+```osna --help
 Usage: osna [OPTIONS] COMMAND [ARGS]...
 
   Console script for osna.
