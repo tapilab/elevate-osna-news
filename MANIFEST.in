@@ -3,9 +3,10 @@ include HISTORY.rst
 include LICENSE
 include README.rst
 include osna/app/templates/*.html
+include osna/app/static/*
 
 recursive-include tests *
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
 
-recursive-include docs *.rst conf.py Makefile make.bat *.jpg *.png *.gif *.html
+recursive-include docs *.rst conf.py Makefile make.bat *.jpg *.png *.gif *.html *.css
