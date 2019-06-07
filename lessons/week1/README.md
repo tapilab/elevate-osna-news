@@ -58,7 +58,8 @@ Options:
   --help  Show this message and exit.
 
 Commands:
-  web```
+  web
+```
 
 
 #### Setting up Twitter tokens
