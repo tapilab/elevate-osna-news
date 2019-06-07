@@ -12,6 +12,7 @@
   + [Lab](#lab-2)
 
 <br>
+
 The goals of this week are to:
 
 - ...
