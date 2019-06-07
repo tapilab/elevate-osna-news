@@ -5,6 +5,7 @@ The goals of this week are to:
 - familiarize yourself with many of the tools we will be using throughout this project
 - ...
 
+<br>
 
 ## Day 1
 
@@ -34,6 +35,8 @@ installed [pip](http://pip.readthedocs.org/en/latest/installing.html), you can
 do this with `pip install networkx TwitterAPI
 
 
+<br>
+
 ## Day 2
 
 Today we will ...
@@ -46,6 +49,8 @@ Today we will ...
 
 #### Topic 1
 
+
+<br>
 
 ## Day 3
 

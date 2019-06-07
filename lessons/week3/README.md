@@ -1,4 +1,4 @@
-# Week 2
+# Week 3
 
 The goals of this week are to:
 
