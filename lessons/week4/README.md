@@ -1,5 +1,3 @@
-[Day 1](#day1)
-
 # Week 4
 
 **Table of Contents**
