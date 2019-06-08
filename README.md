@@ -1,7 +1,7 @@
 # elevate-osna-starter
 
 This repository contains starter code for the summer [Elevate](https://admissions.iit.edu/elevate) course 
-**SCI 498 - 410: Online Social Network Analysis**
+**[SCI 498 - 410: Online Social Network Analysis](https://github.com/tapilab/elevate-osna)**
 taught at the Illinois Institute of Technology.
 
 The code in this repository will be copied into your team's repository at the start of class to provide a starting point for your project.
