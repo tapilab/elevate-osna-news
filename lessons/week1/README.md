@@ -48,8 +48,12 @@ python setup.py develop # install the code.
 
 This may take a while, as all dependencies listed in the `requirements.txt` file will also be installed. (Windows users: if you're having troubles, try reading [this](http://timmyreilly.azurewebsites.net/python-flask-windows-development-environment-setup/)).
 
-5. If everything worked properly, you should now be able to run your project's command-line tool:  
-```osna --help
+5. If everything worked properly, you should now be able to run your project's command-line tool by typing:  
+```
+osna --help
+```
+which should print
+```
 Usage: osna [OPTIONS] COMMAND [ARGS]...
 
   Console script for osna.
@@ -98,7 +102,7 @@ If you open your web browser and go to `http://0.0.0.0:5000/` you should see som
 
 ### Lab
 
-The goal's for this lab are to:
+The goals for this lab are to:
 
 1. Continue all the setup tasks from the lecture, with help from the TA.
 2. Add the names of your team members to your web site on the line that says "osna project"
