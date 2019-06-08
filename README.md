@@ -8,7 +8,7 @@ The code in this repository will be copied into your team's repository at the st
 
 ### Using this repository
 
-- At the start of the course, students will be divided into project teams. Each team will receive a copy of this started code in a new repository. E.g.:
+- At the start of the course, students will be divided into project teams. Each team will receive a copy of this starter code in a new repository. E.g.:
 https://github.com/tapilab/elevate-osna-team1
 - Each team member will then clone their team repository to their personal computer to work on their project. E.g.: `git clone https://github.com/tapilab/elevate-osna-team1.git`
 - Tasks will be assigned to each team, who will then check in their code to their team repository. 
