@@ -12,6 +12,7 @@ The code in this repository will be copied into your team's repository at the st
 https://github.com/tapilab/elevate-osna-team1
 - Each team member will then clone their team repository to their personal computer to work on their project. E.g.: `git clone https://github.com/tapilab/elevate-osna-team1.git`
 - Tasks will be assigned to each team, who will then check in their code to their team repository. 
+- Before beginning work each day, run the `update.sh` command to pull the latest code from the `elevate-osna-starter` repository to your team's repository.
 
 ### Contents
 
