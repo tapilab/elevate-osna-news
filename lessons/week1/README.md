@@ -3,31 +3,27 @@
 
 **Table of Contents**
 - [Day 1](#day-1)
-  + [Lecture](#lecture)
-  + [Lab](#lab)
 - [Day 2](#day-2)
-  + [Lecture](#lecture-1)
-  + [Lab](#lab-1)
 - [Day 3](#day-3)
-  + [Lecture](#lecture-2)
-  + [Lab](#lab-2)
 
 <br>
 
 The goals of this week are to:
 
 - familiarize yourself with many of the tools we will be using throughout this project
-- ...
+- understand the three problem tasks definitions
+- learn how to use the Twitter API to collect data
+- parse and compute statistics of the labeled training data
+- use flask to make a simple web form
 
 <br>
 
 ## Day 1
 
-Today we will ...
+Today we will configure our workspace and run our skeleton web demo.
 
-### Lecture
 
-#### Getting Started with your Github Repository.
+### Getting Started with your Github Repository.
 
 You should have been assigned a project repository for your work. In the examples below, we'll assume the repository is called <https://github.com/tapilab/elevate-osna-team1>. This is where all your code will live. 
 
@@ -66,7 +62,7 @@ Commands:
 ```
 
 
-#### Setting up Twitter tokens
+### Setting up Twitter tokens
 In order to use the Twitter API, you will need to create an app on their site, then generate security tokens which are required to communicate with the API.
 
 1. Create an account on [twitter.com](http://twitter.com).
@@ -75,7 +71,7 @@ In order to use the Twitter API, you will need to create an app on their site, t
 4. Copy `credentials.json` to your home directory `~/.osna/credentials.json` (on windows, this is `C:\Users\<username>`.)
 
 
-#### Flask Web UI
+### Flask Web UI
 
 Your tool currently has one command called `web`. This launches a simple web server which we will use to make a demo of your project. You can launch it with:  
 `osna web`  
@@ -117,31 +113,29 @@ The goals for this lab are to:
 
 ## Day 2
 
-Today we will ...
+Today we will learn about the data used in the project, how to parse it, and how to compute statistics over it.
 
-### Lecture
 
-- First, each team will present their work from the lab on Day 1.
+### JSON
 
-#### Topic 1
+[JSON](https://en.wikipedia.org/wiki/JSON) is a commonly used format to store data. We will learn what this format looks like and how to process it in Python. We will next add a new command called `stats` that will read a collection of json objects and print statistics about them. 
 
 ### Lab
 
-#### Topic 1
-
+1. Download the data for your project (links send via email).
+2. Complete the `stats` command to compute the required statistics of the data.
 
 <br>
 
 ## Day 3
 
-Today we will ...
+Today we will learn how to collect and parse data from Twitter, and how to display the results in our web app.
 
-### Lecture
 
-#### Topic 1
+#### Twitter API
 
-### Lab
+- We will first use the Twitter API to collect the most recent 200 tweets from a user. 
 
-#### Topic 1
+- Next, we will modify the web app to collect and display these tweets for a given user. Attention will be paid to error handling.
 
 
