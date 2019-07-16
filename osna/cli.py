@@ -16,7 +16,7 @@ def main(args=None):
 @click.option('-t', '--twitter-credentials', required=False, type=click.Path(exists=True), show_default=True, default=credentials_path, help='a json file of twitter tokens')
 def web(twitter_credentials):
 	from .app import app
-	app.run(host='0.0.0.0', debug=True)
+	app.run(host='127.0.0.1', debug=True)
 	
 
 if __name__ == "__main__":
