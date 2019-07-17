@@ -128,6 +128,14 @@ Today we will learn about the data used in the project, how to parse it, and how
 
 1. Download the data for your project (links send via email).
 2. Complete the `stats` command to compute the required statistics of the data.
+  - Number of unique users
+  - Number of unique messages
+  - Number of users/message per class/category.
+  - Number of unique words (using the tweet_tokenizer from class)
+  - Number of tokens (non-unique words)
+  - 50 most common words
+  - 50 most common words per class.
+  
 
 <br>
 
