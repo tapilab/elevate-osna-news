@@ -59,43 +59,25 @@ def Mystats(directory):
     counts = counters(cf['comment_tokens'])
     print('Number of unique messages in FALSE:', len(counts))
     counts = counters(cu['comment_tokens'])
-    print('Number of unique messages in unknown:', len(counts))
+    print('Number of unique messages in unknown:', len(counts),'\n')
 
-    tokens = []
-    for tweet in tqdm(df['comment_tokens'], ncols=100):
-        tokens = tokens + tweet_tokenizer(tweet)
-        # for test purpose
-        # if len(tokens) > 10000:
-        #     break
+    tokens = [token for tweet in tqdm(df['comment_tokens'], ncols=80) for token in tweet_tokenizer(tweet)]
     counts = counters(tokens)
-    print('\nNumber of unique words:', len(counts))
+
+    print('Number of unique words:', len(counts))
     print('Number of unique tokens:', len(tokens))
     print('\n50 most common words:', counts.most_common(50))
 
-    tokens = []
-    for tweet in tqdm(ct['comment_tokens'], ncols=100):
-        tokens = tokens + tweet_tokenizer(tweet)
-        # for test purpose
-        # if len(tokens) > 10000:
-        #     break
+    tokens = [token for tweet in tqdm(ct['comment_tokens'], ncols=80) for token in tweet_tokenizer(tweet)]
     counts = counters(tokens)
+
     print('50 most common words in TRUE:', counts.most_common(50))
 
-    tokens = []
-    for tweet in tqdm(cf['comment_tokens'], ncols=100):
-        tokens = tokens + tweet_tokenizer(tweet)
-        # for test purpose
-        # if len(tokens) > 10000:
-        #     break
+    tokens = [token for tweet in tqdm(cf['comment_tokens'], ncols=80) for token in tweet_tokenizer(tweet)]
     counts = counters(tokens)
     print('50 most common words in FALSE:', counts.most_common(50))
 
-    tokens = []
-    for tweet in tqdm(cu['comment_tokens'], ncols=100):
-        tokens = tokens + tweet_tokenizer(tweet)
-        # for test purpose
-        # if len(tokens) > 10000:
-        #     break
+    tokens = [token for tweet in tqdm(cu['comment_tokens'], ncols=80) for token in tweet_tokenizer(tweet)]
     counts = counters(tokens)
     print('50 most common words in unknown:', counts.most_common(50))
 
@@ -115,11 +97,11 @@ def tweet_tokenizer(s):
     return re.sub('\W+', ' ', s.lower()).split()
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
     # panda's display settings
     # pd.set_option('display.max_rows', 10)
     # pd.set_option('display.max_columns', 10)
 
     # unit test
-    DATAPATH = '..\\..\\training_data\\twitter.csv'
-    df = Mystats(DATAPATH)
+    # DATAPATH = '..\\..\\training_data\\twitter.csv'
+    # df = Mystats(DATAPATH)
