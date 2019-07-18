@@ -19,7 +19,7 @@ def Mystats(directory):
     # print(df['comment_tokens'])
 
     # load check data
-    ck = pd.read_csv('..\\..\\training_data\\factchecks.csv')
+    ck = pd.read_csv('..\\training_data\\factchecks.csv')
     # print(ck)
     # print(ck.describe())
     # print(ck.keys())
@@ -62,7 +62,7 @@ def Mystats(directory):
     print('Number of unique messages in unknown:', len(counts))
 
     tokens = []
-    for tweet in tqdm(df['comment_tokens']):
+    for tweet in tqdm(df['comment_tokens'], ncols=100):
         tokens = tokens + tweet_tokenizer(tweet)
         # for test purpose
         # if len(tokens) > 10000:
@@ -73,7 +73,7 @@ def Mystats(directory):
     print('\n50 most common words:', counts.most_common(50))
 
     tokens = []
-    for tweet in tqdm(ct['comment_tokens']):
+    for tweet in tqdm(ct['comment_tokens'], ncols=100):
         tokens = tokens + tweet_tokenizer(tweet)
         # for test purpose
         # if len(tokens) > 10000:
@@ -82,7 +82,7 @@ def Mystats(directory):
     print('50 most common words in TRUE:', counts.most_common(50))
 
     tokens = []
-    for tweet in tqdm(cf['comment_tokens']):
+    for tweet in tqdm(cf['comment_tokens'], ncols=100):
         tokens = tokens + tweet_tokenizer(tweet)
         # for test purpose
         # if len(tokens) > 10000:
@@ -91,7 +91,7 @@ def Mystats(directory):
     print('50 most common words in FALSE:', counts.most_common(50))
 
     tokens = []
-    for tweet in tqdm(cu['comment_tokens']):
+    for tweet in tqdm(cu['comment_tokens'], ncols=100):
         tokens = tokens + tweet_tokenizer(tweet)
         # for test purpose
         # if len(tokens) > 10000:
