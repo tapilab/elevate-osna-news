@@ -1,16 +1,8 @@
 import pandas as pd
 import re
 from collections import Counter
-import os
 from tqdm import tqdm
-
-# read json
-# import json
-# f = open(directory, 'r', encoding='utf-8')
-# tweets = []
-# for line in f:
-#     tweets.append(json.load(line))
-# print(tweets)
+import os
 
 def Mystats(directory):
     df = pd.read_csv(directory + os.path.sep + 'twitter.csv.gz')
@@ -46,23 +38,23 @@ def Mystats(directory):
     cu = ck.loc[ck['ruling'] == 'unknown']
     # print('unknown sets\n', cu)
 
-    counts = counters(df['social_id'])
+    counts = set(df['social_id'])
     print('Number of unique users:', len(counts))
-    counts = counters(df['comment_tokens'])
+    counts = set(df['comment_tokens'])
     print('Number of unique messages:', len(counts))
 
-    counts = counters(ct['social_id'])
+    counts = set(ct['social_id'])
     print('\nNumber of unique users in TRUE:', len(counts))
-    counts = counters(cf['social_id'])
+    counts = set(cf['social_id'])
     print('Number of unique users in FALSE:', len(counts))
-    counts = counters(cu['social_id'])
+    counts = set(cu['social_id'])
     print('Number of unique users in unknown:', len(counts))
 
-    counts = counters(ct['comment_tokens'])
+    counts = set(ct['comment_tokens'])
     print('\nNumber of unique messages in TRUE:', len(counts))
-    counts = counters(cf['comment_tokens'])
+    counts = set(cf['comment_tokens'])
     print('Number of unique messages in FALSE:', len(counts))
-    counts = counters(cu['comment_tokens'])
+    counts = set(cu['comment_tokens'])
     print('Number of unique messages in unknown:', len(counts),'\n')
 
     tokens = [token for tweet in tqdm(df['comment_tokens'], ncols=80) for token in tweet_tokenizer(tweet)]
@@ -70,7 +62,7 @@ def Mystats(directory):
 
     print('Number of unique words:', len(counts))
     print('Number of unique tokens:', len(tokens))
-    print('\n50 most common words:', counts.most_common(50))
+    print('\n50 most common words:', counts.most_common(50), '\n')
 
     tokens = [token for tweet in tqdm(ct['comment_tokens'], ncols=80) for token in tweet_tokenizer(tweet)]
     counts = counters(tokens)

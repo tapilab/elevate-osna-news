@@ -20,3 +20,4 @@ def index():
         return render_template('myform.html', title='', form=form)
     # return redirect('/index')
     return render_template('myform.html', title='', form=form)
+
