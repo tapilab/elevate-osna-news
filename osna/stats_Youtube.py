@@ -2,8 +2,9 @@ import pandas as pd
 from collections import Counter
 import re
 
-def Mystats():
-    df=pd.read_csv('D:\\news\\training_data\\youtube.csv')
+#directory='D:\\news\\training_data\\youtube.csv'
+def Mystats(directory):
+    df=pd.read_csv(directory)
     id=df['social_id'].unique()
     #1
     print('Q1:Number of unique users:',len(id))
@@ -98,4 +99,4 @@ def tweet_tokenizer(df):
 
 
 if __name__=='__main__':
-    Mystats()
+    Mystats(directory)
