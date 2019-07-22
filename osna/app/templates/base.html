@@ -17,11 +17,14 @@
 
         {% with messages = get_flashed_messages() %}
         {% if messages %}
+        {% for message in messages %}
+        timeline of @{{ message }}
         <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
+            {% for tweet in tweets %}
+            <li>{{ tweet }}</li>
             {% endfor %}
         </ul>
+        {% endfor %}
         {% endif %}
         {% endwith %}
         <br>
