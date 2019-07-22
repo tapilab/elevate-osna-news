@@ -19,7 +19,8 @@ def Mystats(directory):
     # print(df['comment_tokens'])
 
     # load check data
-    ck = pd.read_csv('..\\training_data\\factchecks.csv')
+    #ck = pd.read_csv('..\\training_data\\factchecks.csv')
+    ck = pd.read_csv('training_data/factchecks.csv')
     # print(ck)
     # print(ck.describe())
     # print(ck.keys())

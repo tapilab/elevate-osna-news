@@ -11,7 +11,6 @@ from TwitterAPI import TwitterAPI
 
 RATE_LIMIT_CODES = set([88, 130, 420, 429])
 
-
 class Twitter:
     def __init__(self, credential_file):
         """
@@ -20,6 +19,7 @@ class Twitter:
           required tokens: consumer_key, consumer_secret, access_token, access_secret
         """
         self.credentials = [json.loads(l) for l in open(credential_file)]
+        print(self.credentials)
         self.credential_cycler = cycle(self.credentials)
         self.reinit_api()
 

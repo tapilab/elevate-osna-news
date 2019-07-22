@@ -14,16 +14,18 @@
         {{ form.errors }}
         {% endif %}
         {% block content %}{% endblock %}
-
         {% with messages = get_flashed_messages() %}
         {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
+        {% for message in messages %}
+        The most recent 200 tweets from {{ message }} are as follows:
+        {% endfor %}
         {% endif %}
         {% endwith %}
+        <ul>
+        {% for tweet in tweets %}
+        <div><li type="1">{{ tweet }}</li></div>
+        {% endfor %}
+        </ul>
         <br>
     </body>
 </html>
