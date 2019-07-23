@@ -1,7 +1,6 @@
 import pandas as pd
 import re
 from collections import Counter
-import os
 from tqdm import tqdm
 
 # read json
@@ -13,17 +12,15 @@ from tqdm import tqdm
 # print(tweets)
 
 def Mystats(directory):
-    df = pd.read_csv(directory + os.path.sep + 'twitter.csv.gz')
+    df = pd.read_csv(directory)
     # print(df)
     # print(df.describe())
     # print(df.keys())
     # print(df['comment_tokens'])
 
     # load check data
-    # this assumes location of training_data is fixed. use the directory parameter
-    # passed in above instead. -awc
     #ck = pd.read_csv('..\\training_data\\factchecks.csv')
-    ck = pd.read_csv(directory + os.path.sep + 'factchecks.csv')
+    ck = pd.read_csv('training_data/factchecks.csv')
     # print(ck)
     # print(ck.describe())
     # print(ck.keys())

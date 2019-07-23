@@ -27,7 +27,7 @@ def web(twitter_credentials, port):
 @main.command('stats')
 @click.argument('directory', type=click.Path(exists=True))
 def stats(directory):
-    print('reading from %s' % directory)
+    print('reading from %s' % directory) 
     from .stats import Mystats
     Mystats(directory)
 
