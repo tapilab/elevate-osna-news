@@ -3,9 +3,19 @@
 """Console script for elevate_osna."""
 import click
 import glob
+import pickle
 import sys
 
-from . import credentials_path, config
+import numpy as np
+import pandas as pd
+import re
+from sklearn.feature_extraction import DictVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import KFold
+from sklearn.metrics import accuracy_score
+
+from . import credentials_path, clf_path
 
 @click.group()
 def main(args=None):
@@ -16,19 +26,38 @@ def main(args=None):
 @click.option('-t', '--twitter-credentials', required=False, type=click.Path(exists=True), show_default=True, default=credentials_path, help='a json file of twitter tokens')
 @click.option('-p', '--port', required=False, default=5000, show_default=True, help='port of web server')
 def web(twitter_credentials, port):
-	from .app import app
-	app.run(host='0.0.0.0', debug=True, port=port)
-	
+    from .app import app
+    app.run(host='0.0.0.0', debug=True, port=port)
+    
 
 @main.command('stats')
 @click.argument('directory', type=click.Path(exists=True))
 def stats(directory):
-	"""
-	Read all files in this directory and its subdirectories and print statistics.
-	"""
-	print('reading from %s' % directory)
-	# use glob to iterate all files matching desired pattern (e.g., .json files).
-	# recursively search subdirectories.
+    """
+    Read all files in this directory and its subdirectories and print statistics.
+    """
+    print('reading from %s' % directory)
+    # use glob to iterate all files matching desired pattern (e.g., .json files).
+    # recursively search subdirectories.
+
+@main.command('train')
+@click.argument('directory', type=click.Path(exists=True))
+def train(directory):
+    """
+    Train a classifier and save it.
+    """
+    print('reading from %s' % directory)
+    # Add code to train your classifier!
+    clf = LogisticRegression()# None #
+    vec = CountVectorizer() # None
+    # train...
+    pickle.dump((clf, vec), open(clf_path, 'wb'))
+
+
+def make_features(df):
+    ## Add your code to create features.
+    pass
+
 
 if __name__ == "__main__":
     sys.exit(main())  # pragma: no cover
