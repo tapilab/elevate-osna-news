@@ -13,7 +13,7 @@ from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import KFold
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, classification_report
 
 from . import credentials_path, clf_path
 
@@ -47,10 +47,18 @@ def train(directory):
     Train a classifier and save it.
     """
     print('reading from %s' % directory)
-    # Add code to train your classifier!
-    clf = LogisticRegression()# None #
-    vec = CountVectorizer() # None
+    # (1) Read the data...
+    #
+    # (2) Create classifier and vectorizer.
+    clf = LogisticRegression() # set best parameters 
+    vec = CountVectorizer()    # set best parameters
+    
+    # (3) do cross-validation and print out validation metrics
+    # (classification_report)
+
+    # (4) Finally, train on ALL data one final time and
     # train...
+    # save the classifier
     pickle.dump((clf, vec), open(clf_path, 'wb'))
 
 
