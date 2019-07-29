@@ -69,7 +69,7 @@ df = load_data('..\\..\\training_data\\twitter.csv', '..\\..\\training_data\\fac
 # print(df.head(), df.keys())
 
 
-def train_and_predict(vec,lr):
+def train_and_predict(df, vec,lr,train = 'test'):
     # vectorize text
     # vec = TfidfVectorizer(analyzer='word', token_pattern=r'[^0-9_\W]+', min_df=1)
     X = vec.fit_transform(df.text)
@@ -94,18 +94,26 @@ def train_and_predict(vec,lr):
     # # from the file.
     # vec, lr = pickle.load(open('clf.pkl', 'rb'))
 
-    from sklearn.model_selection import KFold
-    from sklearn.metrics import accuracy_score
+    if not train:
+        from sklearn.model_selection import KFold
+        from sklearn.metrics import accuracy_score
 
-    kf = KFold(n_splits=5, shuffle=True, random_state=42)
-    accuracies = []
-    for train, test in kf.split(X):
-        lr.fit(X[train], Y[train])
-        pred = lr.predict(X[test])
-        accuracies.append(accuracy_score(Y[test], pred))
-        print(classification_report(Y[test], pred))
-    print('accuracy over all cross-validation folds: %s' % str(accuracies))
-    print('mean=%.2f std=%.2f' % (np.mean(accuracies), np.std(accuracies)))
+        kf = KFold(n_splits=5, shuffle=True, random_state=42)
+        accuracies = []
+        for train, test in kf.split(X):
+            lr.fit(X[train], Y[train])
+            pred = lr.predict(X[test])
+            accuracies.append(accuracy_score(Y[test], pred))
+            print(classification_report(Y[test], pred))
+        print('accuracy over all cross-validation folds: %s' % str(accuracies))
+        print('mean=%.2f std=%.2f' % (np.mean(accuracies), np.std(accuracies)))
+    elif train:
+        lr.fit(X, Y)
+    else:
+        ex = Exception('wrong command')
+        raise ex
+
+    return vec,lr
 
 # print('----min_df---')
 # for min_df in [1, 2, 5, 10]:
@@ -144,7 +152,7 @@ def train_and_predict(vec,lr):
 
 lr = LogisticRegression(C=10, penalty='l2')
 vec = TfidfVectorizer(analyzer='word', token_pattern=r'[^0-9_\W]+', min_df=2, max_df=.9, ngram_range=(1, 3))
-train_and_predict(vec, lr)
+train_and_predict(df, vec, lr)
 
 # lr = LogisticRegression(C=10, penalty='l2')
 # vec = TfidfVectorizer(analyzer='word', token_pattern=r'[^0-9_\W]+', min_df=2, max_df=1., ngram_range=(1, 3))

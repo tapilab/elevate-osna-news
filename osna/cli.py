@@ -11,11 +11,12 @@ import numpy as np
 import pandas as pd
 import re
 from sklearn.feature_extraction import DictVectorizer
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score, classification_report
 
+from osna.clf_train import train_and_predict, load_data
 from . import credentials_path, clf_path
 
 
@@ -48,17 +49,22 @@ def train(directory):
     Train a classifier and save it.
     """
     print('reading from %s' % directory)
+
     # (1) Read the data...
-    #
+    df = load_data('..\\..\\training_data\\twitter.csv', '..\\..\\training_data\\factchecks.csv')
+
     # (2) Create classifier and vectorizer.
-    clf = LogisticRegression() # set best parameters 
-    vec = CountVectorizer()    # set best parameters
+    # set best parameters
+    lr = LogisticRegression(C=10, penalty='l2')
+    vec = TfidfVectorizer(analyzer='word', token_pattern=r'[^0-9_\W]+', min_df=2, max_df=.9, ngram_range=(1, 3))
     
     # (3) do cross-validation and print out validation metrics
     # (classification_report)
+    vec, clf = train_and_predict(df, vec, lr)
 
     # (4) Finally, train on ALL data one final time and
     # train...
+    vec, clf = train_and_predict(df, vec, lr, train=True)
     # save the classifier
     pickle.dump((clf, vec), open(clf_path, 'wb'))
 
