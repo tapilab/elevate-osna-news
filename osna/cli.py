@@ -51,7 +51,7 @@ def train(directory):
     print('reading from %s' % directory)
 
     # (1) Read the data...
-    df = load_data('..\\..\\training_data\\twitter.csv', '..\\..\\training_data\\factchecks.csv')
+    df = load_data(directory, '..\\..\\training_data\\factchecks.csv')
 
     # (2) Create classifier and vectorizer.
     # set best parameters
