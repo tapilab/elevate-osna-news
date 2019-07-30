@@ -16,17 +16,19 @@
         {% block content %}{% endblock %}
 
         {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        {% for message in messages %}
-        The most recent 200 tweets from {{ message }} are as follows:
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
-        <ul>
-        {% for tweet in tweets %}
-        <div><li type="1">{{ tweet }}</li></div>
-        {% endfor %}
-        </ul>
+            {% if messages %}
+                {% for message in messages %}
+
+        News: {{ message }} is considered to be {{ pred }} with probability {{ proba }}% probability.
         <br>
+        Related tweet is:
+        <br>
+        <h2>{{ news.title }}</h2>
+        <br>
+        {{ news.text }}
+
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
     </body>
 </html>

@@ -1,3 +1,6 @@
+import glob
+
+
 def read_data(directory):
     dfs = []
     for label in ['real', 'fake']:

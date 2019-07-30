@@ -1,3 +1,7 @@
+import glob
+import os
+import json
+import gzip
 from collections import Counter
 import numpy as np
 import pandas as pd
@@ -9,7 +13,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import classification_report
 from scipy.sparse import csr_matrix, hstack
 import pickle
-
 
 
 def load_data(datafile, checkfile):
@@ -63,25 +66,35 @@ def load_data(datafile, checkfile):
 
     return df
 
+def read_data(directory):
+    dfs = []
+    for label in ['real', 'fake']:
+        for file in glob.glob(directory + os.path.sep + label + os.path.sep + '*gz'):
+            print('reading %s' % file)
+            df = pd.DataFrame((json.loads(line) for line in gzip.open(file)))
+            df['label'] = label
+            dfs.append(df)
+    return pd.concat(dfs)[['publish_date', 'source', 'text', 'title', 'tweets', 'label']]
 
-# load data
-df = load_data('..\\..\\training_data\\twitter.csv', '..\\..\\training_data\\factchecks.csv')
-# print(df.head(), df.keys())
+
+# # load data
+# df = load_data('..\\..\\training_data\\twitter.csv', '..\\..\\training_data\\factchecks.csv')
+# # print(df.head(), df.keys())
 
 
-def train_and_predict(df, vec,lr,train = 'test'):
+def train_and_predict(X,Y, lr, train='test'):
     # vectorize text
     # vec = TfidfVectorizer(analyzer='word', token_pattern=r'[^0-9_\W]+', min_df=1)
-    X = vec.fit_transform(df.text)
+    # X = vec.fit_transform(df.text)
 
     # add features
-    features = np.matrix([df.timeslot, df.comments_count]).T
+    # features = np.matrix([df.timeslot, df.comments_count]).T
     # print(features)
     # X = hstack([X, features])
     # X = X.todense()
     # X = features
     # load lables
-    Y = np.array(df.label)
+    # Y = np.array(df.label)
 
     # fit our classifier.
 
@@ -109,11 +122,33 @@ def train_and_predict(df, vec,lr,train = 'test'):
         print('mean=%.2f std=%.2f' % (np.mean(accuracies), np.std(accuracies)))
     elif train:
         lr.fit(X, Y)
+        return lr
     else:
         ex = Exception('wrong command')
         raise ex
 
-    return vec,lr
+
+def make_features(df):
+    ## Add your code to create features.
+    features: np.matrix
+
+    print(df.tweets)
+
+
+    return features
+
+
+def quantization(f, bins):
+    features = []
+    for key in f.keys():
+        cats = pd.cut(f[key], bins, labels=False)
+        for i in range(len(bins)):
+            features.append([1 if c == i else 0 for c in cats])
+    features = np.matrix(features).T
+    return features
+
+
+
 
 # print('----min_df---')
 # for min_df in [1, 2, 5, 10]:
@@ -150,10 +185,11 @@ def train_and_predict(df, vec,lr,train = 'test'):
 #     vec = TfidfVectorizer(analyzer='word',token_pattern=r'[^0-9_\W]+', min_df=2, max_df=1., ngram_range=(1, 1))
 #     train_and_predict(vec, lr)
 
-lr = LogisticRegression(C=10, penalty='l2')
-vec = TfidfVectorizer(analyzer='word', token_pattern=r'[^0-9_\W]+', min_df=2, max_df=.9, ngram_range=(1, 3))
-train_and_predict(df, vec, lr)
+# lr = LogisticRegression(C=10, penalty='l2')
+# vec = TfidfVectorizer(analyzer='word', token_pattern=r'[^0-9_\W]+', min_df=2, max_df=.9, ngram_range=(1, 3))
+# train_and_predict(df, vec, lr)
 
+## optimized classifier
 # lr = LogisticRegression(C=10, penalty='l2')
 # vec = TfidfVectorizer(analyzer='word', token_pattern=r'[^0-9_\W]+', min_df=2, max_df=1., ngram_range=(1, 3))
 # train_and_predict(vec, lr)
