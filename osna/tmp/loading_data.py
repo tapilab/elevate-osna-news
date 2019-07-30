@@ -1,4 +1,6 @@
-import glob
+import glob,json
+import os,gzip
+import pandas as pd
 
 
 def read_data(directory):
@@ -9,4 +11,6 @@ def read_data(directory):
             df = pd.DataFrame((json.loads(line) for line in gzip.open(file)))
             df['label'] = label
             dfs.append(df)
-    return pd.concat(dfs)[['publish_date', 'source', 'text', 'title', 'tweets', 'label']]
+    df=pd.concat(dfs)[['publish_date', 'source', 'text', 'title', 'tweets', 'label']]
+    list_text = [i for i in list(df.text) if i != '']
+    return df[df.text.isin(list_text)]
