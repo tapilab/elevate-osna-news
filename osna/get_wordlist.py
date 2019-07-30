@@ -1,27 +1,9 @@
-import glob,json
-import os,gzip
-import pandas as pd
-
 import re
 from nltk.stem import WordNetLemmatizer
 from nltk import pos_tag
 from nltk.corpus import stopwords
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
-
-def read_data(directory):
-    dfs = []
-    for label in ['real', 'fake']:
-        for file in glob.glob(directory + os.path.sep + label + os.path.sep + '*gz'):
-            # print('reading %s' % file)
-            df = pd.DataFrame((json.loads(line) for line in gzip.open(file)))
-            df['label'] = label
-            dfs.append(df)
-    df=pd.concat(dfs)[['publish_date', 'source', 'text', 'title', 'tweets', 'label']]
-    list_text = [i for i in list(df.text) if i != '']
-    df=df[df.text.isin(list_text)]
-    return df,list_text
-
 
 
 def tokennizer(s):
@@ -55,7 +37,7 @@ def lemmatize(l):
         else:
             yield word
 
-def wordlist_train(list):
+def get_wordlist(list):
     stopword=set(stopwords.words('english'))
     list_new=[]
     for l in list:
@@ -67,16 +49,3 @@ def wordlist_train(list):
         if l!='':
             list_new.append(l)
     return list_new
-
-
-def get_matrix():
-    df, list_text = read_data('..\\training_data')
-    word_list=wordlist_train(list_text)
-    tv=TfidfVectorizer(min_df=2,max_df=1.0,ngram_range=(1,1),stop_words= 'english')
-    X=tv.fit_transform(word_list)
-    return X.toarray()
-
-
-
-if __name__=='__main__':
-    print(get_matrix())
