@@ -46,6 +46,5 @@ def get_wordlist(list):
         l=' '.join(l1)
         l1=[tokennizer(w) for w in l.split() if len(tokennizer(w))>2 and tokennizer(w) not in stopword]
         l=' '.join(lemmatize(l1))
-        if l!='':
-            list_new.append(l)
+        list_new.append(l)
     return list_new
