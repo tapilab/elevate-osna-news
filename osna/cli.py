@@ -53,17 +53,21 @@ def train(directory):
 
     # (1) Read the data...
     df = read_data(directory)
+   
+    text=get_wordlist(list(df.text))
+    title=get_wordlist(list(df.title))
+    source=get_wordlist(list(df.source))
 
     # (2) Create classifier and vectorizer.
     # set best parameters
     lr = LogisticRegression(C=10, penalty='l2')
-    vec1 = TfidfVectorizer(analyzer='word', token_pattern=r'[^0-9_\W]+', min_df=2, max_df=.9, ngram_range=(1, 3))
-    vec2 = TfidfVectorizer(analyzer='word', token_pattern=r'[^0-9_\W]+', min_df=2, max_df=.9, ngram_range=(1, 3))
-    vec3 = TfidfVectorizer(analyzer='word', token_pattern=r'[^0-9_\W]+', min_df=2, max_df=.9, ngram_range=(1, 3))
-
-    x1 = vec1.fit_transform(df.text)
-    x2 = vec2.fit_transform(df.title)
-    x3 = vec3.fit_transform(df.source)
+    vec1 = TfidfVectorizer(analyzer='word', min_df=2, max_df=.9, ngram_range=(1, 3),stop_words= 'english')
+    vec2 = TfidfVectorizer(analyzer='word', min_df=2, max_df=.9, ngram_range=(1, 3),stop_words= 'english')
+    vec3 = TfidfVectorizer(analyzer='word', min_df=2, max_df=.9, ngram_range=(1, 3),stop_words= 'english')
+    
+    x1 = vec1.fit_transform(text)
+    x2 = vec2.fit_transform(title)
+    x3 = vec3.fit_transform(source)
 
     features = make_features(df)
 
