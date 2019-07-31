@@ -3,7 +3,6 @@ from nltk.stem import WordNetLemmatizer
 from nltk import pos_tag
 from nltk.corpus import stopwords
 import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 def tokennizer(s):
@@ -37,7 +36,7 @@ def lemmatize(l):
         else:
             yield word
 
-def get_wordlist(list):
+def get_text(list):
     stopword=set(stopwords.words('english'))
     list_new=[]
     for l in list:
@@ -46,5 +45,14 @@ def get_wordlist(list):
         l=' '.join(l1)
         l1=[tokennizer(w) for w in l.split() if len(tokennizer(w))>2 and tokennizer(w) not in stopword]
         l=' '.join(lemmatize(l1))
+        list_new.append(l)
+    return list_new
+
+def get_source(list):
+    list_new = []
+    for l in list:
+        l = re.sub(r"http[s]?://", '', l).lower()
+        l1 = [w for w in l.split('.') if w != 'www']
+        l = ' '.join(l1)
         list_new.append(l)
     return list_new
