@@ -8,6 +8,7 @@ import sys
 import time
 import traceback
 from TwitterAPI import TwitterAPI
+import pandas as pd
 
 RATE_LIMIT_CODES = set([88, 130, 420, 429])
 
@@ -137,3 +138,11 @@ class Twitter:
                 sys.stderr.write(traceback.format_exc() + '\n')
                 return tweets
         return tweets
+
+    def search_news(self, identifier, limit=1e10):
+        response = self.request('search/tweets',{'q':identifier,'count':100})
+        if response.status_code == 200:  # success
+            df = pd.DataFrame(response)[['id', 'source', 'text', 'created_at', 'retweeted_status']]
+        else:
+            sys.stderr.write('error')
+        return df
