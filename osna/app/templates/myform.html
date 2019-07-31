@@ -1,12 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <b>Get one's tweets.</b>
+    <b> News Validation </b>
     <form action="" method="post" novalidate>
 
         <p>
             {{ form.input_field.label }} {{ form.input_field(size=32) }}
         </p>
+        <p>
+            {{ form.select_field.label }} {{ form.select_field }}
+        </p>
+
         {{ form.submit() }}
 
     </form>

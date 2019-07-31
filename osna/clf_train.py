@@ -84,7 +84,7 @@ def read_data(directory):
 # # print(df.head(), df.keys())
 
 
-def train_and_predict(X,Y, lr, train=False):
+def train_and_predict(X, Y, lr, train=False):
     # vectorize text
     # vec = TfidfVectorizer(analyzer='word', token_pattern=r'[^0-9_\W]+', min_df=1)
     # X = vec.fit_transform(df.text)

@@ -19,21 +19,19 @@
             {% if messages %}
                 {% for message in messages %}
 
-        News: {{ message }} is considered to be {{ pred }} with probability {{ proba }}% probability.
-        <br>
+        News: <b>{{ message }}</b> is considered to be <b>{{ pred }}</b> with <b>{{ proba }}% </b> probability.
+        <br><br>
         Related tweet is:
         <br>
-        <h2>{{ news.title }}</h2>
-        <br>
+        <!--<h2>{{ news.title }}</h2>-->
         {{ news.text }}
-        <br>
+        <br><br>
         top features are:
-        <br>
-        <ol>
+        <ul>
             {% for top_feature in top_features %}
             <li>{{ top_feature.feature }} : {{ top_feature.coef }}</li>
             {% endfor %}
-        </ol>
+        </ul>
                 {% endfor %}
             {% endif %}
         {% endwith %}
