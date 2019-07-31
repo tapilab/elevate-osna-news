@@ -4,6 +4,7 @@ from osna.clf_train import make_features
 from . import app
 from .forms import MyForm
 from .. import credentials_path, clf_path
+from osna.get_wordlist import get_text,get_source
 
 import pickle
 import numpy as np
@@ -30,10 +31,9 @@ def index():
         # tweets = [tweet['full_text'] for tweet in t._get_tweets('screen_name', input_field, limit=200)]
 
         news = get_tweets(input_field)
+        pred, proba, top_features = predict(news)
 
-        pred, proba = predict(pd.DataFrame(news))
-
-        return render_template('myform.html', title='', form=form, news=news, pred=pred, proba=proba*100)
+        return render_template('myform.html', title='', form=form, news=news, pred=pred, proba=proba*100, top_features=top_features)
     # return redirect('/index')
 
     return render_template('myform.html', title='', form=form)
@@ -41,25 +41,40 @@ def index():
 
 def get_tweets(input_field):
     t = Twitter(credentials_path)
-    new_tweets = t._get_tweets('screen_name', input_field, limit=200)
+    #search news and get tweets
+    new_tweets = t._search_news(input_field)[0]
     return new_tweets
 
 
 def predict(df):
     vec1, vec2, vec3, lr = pickle.load(open('clf.pkl', 'rb'))
 
-    x1 = vec1.transform(df.text)
-    x2 = vec2.transform(df.source)
-    x3 = vec3.transform(df.title)
+    text = get_text(list(df.text))
+    # title = get_text(list(df.title))
+    # source = get_source(list(df.source))
 
-    features = make_features(df)
+    x1 = vec1.transform(text)
+    # x2 = vec2.transform(title)
+    # x3 = vec3.transform(source)
 
-    x = np.hstack([x1, x2, x3, features])
+    # features = make_features(df)
+
+    # x = np.hstack([x1, x2, x3, features])
+    x = x1
+
+    top_features = []
 
     pred = lr.predict(x)[0]
     proba = lr.predict_proba(x)[0]
 
-    return pred, proba
+    top_features = []
+    features = vec.get_feature_names()
+
+    for j in np.argsort(lr.coef_[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop step
+        idx = x[0].nonzero()[1][j]
+        top_features.append({'feature': features[idx], 'coef': lr.coef_[0][idx]})
+
+    return pred, proba, top_features
 
 
 

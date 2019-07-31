@@ -84,7 +84,7 @@ def read_data(directory):
 # # print(df.head(), df.keys())
 
 
-def train_and_predict(X,Y, lr, train='test'):
+def train_and_predict(X,Y, lr, train=False):
     # vectorize text
     # vec = TfidfVectorizer(analyzer='word', token_pattern=r'[^0-9_\W]+', min_df=1)
     # X = vec.fit_transform(df.text)
@@ -93,7 +93,7 @@ def train_and_predict(X,Y, lr, train='test'):
     # features = np.matrix([df.timeslot, df.comments_count]).T
     # print(features)
     # X = hstack([X, features])
-    # X = X.todense()
+    X = X.todense()
     # X = features
     # load lables
     # Y = np.array(df.label)
@@ -133,10 +133,11 @@ def train_and_predict(X,Y, lr, train='test'):
 def make_features(df):
     ## Add your code to create features.
     features: np.matrix
+    tweets_all = df.tweets.value
+    f = {}
 
-    print(df.tweets)
-
-
+    for tweets in tweets_all:
+        pass
     return features
 
 

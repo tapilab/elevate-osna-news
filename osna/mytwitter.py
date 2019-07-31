@@ -139,10 +139,10 @@ class Twitter:
                 return tweets
         return tweets
 
-    def search_news(self, identifier, limit=1e10):
+    def _search_news(self, identifier):
         response = self.request('search/tweets',{'q':identifier,'count':100})
         if response.status_code == 200:  # success
             df = pd.DataFrame(response)[['id', 'source', 'text', 'created_at', 'retweeted_status']]
+            return df
         else:
             sys.stderr.write('error')
-        return df

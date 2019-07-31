@@ -26,7 +26,14 @@
         <h2>{{ news.title }}</h2>
         <br>
         {{ news.text }}
-
+        <br>
+        top features are:
+        <br>
+        <ol>
+            {% for top_feature in top_features %}
+            <li>{{ top_feature.feature }} : {{ top_feature.coef }}</li>
+            {% endfor %}
+        </ol>
                 {% endfor %}
             {% endif %}
         {% endwith %}
