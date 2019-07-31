@@ -3,7 +3,7 @@ from flask import render_template, flash, redirect, session
 from osna.clf_train import make_features
 from . import app
 from .forms import MyForm
-from .. import credentials_path, clf_path
+from .. import credentials_path, clf_path, osna_path
 from osna.get_wordlist import get_text,get_source
 
 import pickle
@@ -14,9 +14,9 @@ import json
 from TwitterAPI import TwitterAPI
 from ..mytwitter import Twitter
 
-clf, vec = pickle.load(open(clf_path, 'rb'))
-print('read clf %s' % str(clf))
-print('read vec %s' % str(vec))
+# clf, vec = pickle.load(open(clf_path, 'rb'))
+# print('read clf %s' % str(clf))
+# print('read vec %s' % str(vec))
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
@@ -42,12 +42,12 @@ def index():
 def get_tweets(input_field):
     t = Twitter(credentials_path)
     #search news and get tweets
-    new_tweets = t._search_news(input_field)[0]
+    new_tweets = t._search_news(input_field)
     return new_tweets
 
 
 def predict(df):
-    vec1, vec2, vec3, lr = pickle.load(open('clf.pkl', 'rb'))
+    vec1, vec2, vec3, lr = pickle.load(open(clf_path, 'rb'))
 
     text = get_text(list(df.text))
     # title = get_text(list(df.title))
@@ -68,7 +68,7 @@ def predict(df):
     proba = lr.predict_proba(x)[0]
 
     top_features = []
-    features = vec.get_feature_names()
+    features = vec1.get_feature_names()
 
     for j in np.argsort(lr.coef_[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop step
         idx = x[0].nonzero()[1][j]
