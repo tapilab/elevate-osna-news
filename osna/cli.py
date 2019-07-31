@@ -17,6 +17,7 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score, classification_report
 
 from osna.clf_train import train_and_predict, make_features, read_data
+from osna.get_wordlist import get_text,get_source
 from . import credentials_path, clf_path
 
 
@@ -54,20 +55,19 @@ def train(directory):
     # (1) Read the data...
     df = read_data(directory)
    
-    text=get_wordlist(list(df.text))
-    title=get_wordlist(list(df.title))
-    source=get_wordlist(list(df.source))
+    text=get_text(list(df.text))
+    title=get_text(list(df.title))
+    source=get_source(list(df.source))
 
     # (2) Create classifier and vectorizer.
     # set best parameters
     lr = LogisticRegression(C=10, penalty='l2')
-    vec1 = TfidfVectorizer(analyzer='word', min_df=2, max_df=.9, ngram_range=(1, 3),stop_words= 'english')
-    vec2 = TfidfVectorizer(analyzer='word', min_df=2, max_df=.9, ngram_range=(1, 3),stop_words= 'english')
-    vec3 = TfidfVectorizer(analyzer='word', min_df=2, max_df=.9, ngram_range=(1, 3),stop_words= 'english')
+    tvec = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3),stop_words= 'english')
+    cvec = CountVectorizer(min_df=1, max_df=.9, ngram_range=(1, 1))
     
-    x1 = vec1.fit_transform(text)
-    x2 = vec2.fit_transform(title)
-    x3 = vec3.fit_transform(source)
+    x1 = tvec.fit_transform(text)
+    x2 = tvec.fit_transform(title)
+    x3 = cvec.fit_transform(source)
 
     features = make_features(df)
 
