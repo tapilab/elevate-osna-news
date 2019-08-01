@@ -115,11 +115,14 @@ def train_and_predict(X, Y, lr, train=False):
 
         kf = KFold(n_splits=5, shuffle=True, random_state=42)
         accuracies = []
+        report = []
         for train, test in kf.split(X):
             lr.fit(X[train], Y[train])
             pred = lr.predict(X[test])
             accuracies.append(accuracy_score(Y[test], pred))
-            print(classification_report(Y[test], pred))
+            report.append(classification_report(Y[test], pred))
+        for r in report:
+            print(r)
         print('accuracy over all cross-validation folds: %s' % str(accuracies))
         print('mean=%.2f std=%.2f' % (np.mean(accuracies), np.std(accuracies)))
     elif train:

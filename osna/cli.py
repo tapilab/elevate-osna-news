@@ -18,7 +18,7 @@ from sklearn.metrics import accuracy_score, classification_report
 
 from scipy.sparse import csr_matrix, hstack
 from osna.clf_train import train_and_predict, make_features, read_data
-from osna.get_wordlist import get_text,get_source
+from osna.get_wordlist import get_text, get_source
 from . import credentials_path, clf_path, clf_path2, clf_path3
 
 
@@ -56,32 +56,36 @@ def train(directory):
     # (1) Read the data...
     df = read_data(directory)
 
+    df = make_features(df)
+
     text = get_text(list(df.text))
     title = get_text(list(df.title))
     source = get_source(list(df.source))
 
+    features = df.loc[:, ['avg_retweet', 'avg_favorite','avg_followers','avg_friends','avg_listed']]
+    features = df.loc[:, ['avg_retweet', 'avg_favorite']]
+    features = features.to_dict('records')
+
     # (2) Create classifier and vectorizer.
     # set best parameters
     lr = LogisticRegression(C=10, penalty='l2')
-    vec1 = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3),stop_words= 'english')
+    vec1 = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3), stop_words='english')
     vec2 = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3), stop_words='english')
     vec3 = CountVectorizer(min_df=1, max_df=.9, ngram_range=(1, 1))
+    vecf = DictVectorizer()
 
     x1 = vec1.fit_transform(text)
-    # print(x1.shape)
+    print(x1.shape)
     x2 = vec2.fit_transform(title)
-    # print(x2.shape)
+    print(x2.shape)
     x3 = vec3.fit_transform(source)
-    # print(x3.shape)
+    print(x3.shape)
+    xf = vecf.fit_transform(features)
+    print(xf.shape)
 
-    # features = make_features(df)
-
-    # x = np.hstack([x1, x2, x3, features])
-    # x = hstack([x1, x2, x3])
-
-    ## now only use news texts
-    x = x1
+    x = hstack([x1, x2, x3, xf])
     print(x.shape)
+
     y = np.array(df.label)
 
     # (3) do cross-validation and print out validation metrics
@@ -92,7 +96,7 @@ def train(directory):
     # train...
     clf = train_and_predict(x, y, lr, train=True)
     # save the classifier
-    pickle.dump((vec1, vec2, vec3, clf), open(clf_path, 'wb'))
+    pickle.dump((vec1, vec2, vec3, vecf, clf), open(clf_path, 'wb'))
 
 
 @main.command('train2')
@@ -111,9 +115,13 @@ def train(directory):
     lr = LogisticRegression(C=10, penalty='l2')
     vecf = DictVectorizer()
 
-    features = make_features(df)
+    df = make_features(df)
 
-    # now use only user feature
+    features = df.loc[:, ['avg_retweet', 'avg_favorite']]
+    features = features.to_dict('records')
+    # print(features)
+
+    # now use some user feature
     x = vecf.fit_transform(features)
     print(x.shape)
 
@@ -128,6 +136,7 @@ def train(directory):
     clf = train_and_predict(x, y, lr, train=True)
     # save the classifier
     pickle.dump((vecf, clf), open(clf_path2, 'wb'))
+
 
 @main.command('train3')
 @click.argument('directory', type=click.Path(exists=True))
@@ -147,7 +156,7 @@ def train(directory):
     # (2) Create classifier and vectorizer.
     # set best parameters
     lr = LogisticRegression(C=10, penalty='l2')
-    vec1 = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3),stop_words= 'english')
+    vec1 = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3), stop_words='english')
     vec2 = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3), stop_words='english')
     vec3 = CountVectorizer(min_df=1, max_df=.9, ngram_range=(1, 1))
 
