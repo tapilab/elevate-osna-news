@@ -133,12 +133,16 @@ def train_and_predict(X, Y, lr, train=False):
 def make_features(df):
     ## Add your code to create features.
     features: np.matrix
-    tweets_all = df.tweets.value
-    f = {}
+    ret = []
+    fav = []
+    for j in range(len(df.tweets)):
+        tweets2 = df.tweets.values[j]
+        ret.append(sum([tweets2[i]['retweet_count'] for i in range(len(tweets2))]) / len(tweets2))
+        fav.append(sum([tweets2[i]['favorite_count'] for i in range(len(tweets2))]) / len(tweets2))
+    df['avg_retweet'] = ret
+    df['avg_favorite'] = fav
 
-    for tweets in tweets_all:
-        pass
-    return features
+    return df
 
 
 def quantization(f, bins):
