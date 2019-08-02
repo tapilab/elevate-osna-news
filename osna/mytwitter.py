@@ -142,40 +142,43 @@ class Twitter:
     def _search_news(self, identifier):
         tweets = []
         since_id = 0
-        tweets_num = 100
-        while(tweets_num==100):
+        tweets_num = 0
+        while(tweets_num < 500):
             response = self.request('search/tweets',{'q':identifier,'count':100,'since_id':since_id})
             if response.status_code == 200:  # success
                 items = [t for t in response]
-                #if len(items) > 0:
-                tweets.extend(items)
-                since_id = tweets[-1]['user']['id'] + 1
-                tweets_num = len(items)
-                #else:
-                    #return tweets
-                df = pd.DataFrame(tweets)[['created_at','retweeted_status','user']]
-                description = []
-                location = []
-                followers_count = []
-                friends_count = []
-                listed_count = []
-                favourites_count = []
-                statuses_count = []
-                for i, row in df.iterrows():
-                    description.append(row['user']['description'])
-                    location.append(row['user']['location'])
-                    followers_count.append(row['user']['followers_count'])
-                    friends_count.append(row['user']['friends_count'])
-                    listed_count.append(row['user']['listed_count'])
-                    favourites_count.append(row['user']['favourites_count'])
-                    statuses_count.append(row['user']['statuses_count'])
-                df_users = pd.DataFrame(
-                    {'description': description, 'location': location, 'followers_count': followers_count,
-                    'friends_count': friends_count, 'listed_count': listed_count, 'favourites_count': favourites_count,
-                    'statuses_count': statuses_count})
-                df = pd.concat([df[['created_at']], df_users], axis=1)
+                if len(items) == 100:
+                    tweets.extend(items)
+                    since_id = tweets[-1]['user']['id'] + 1
+                    tweets_num = len(tweets)
+                else:
+                    tweets.extend(items)
+                    break
             else:
                 sys.stderr.write('error')
                 return tweets
+
+        df = pd.DataFrame(tweets)[['created_at', 'retweeted_status', 'user']]
+        description = []
+        location = []
+        followers_count = []
+        friends_count = []
+        listed_count = []
+        favourites_count = []
+        statuses_count = []
+        for i, row in df.iterrows():
+            description.append(row['user']['description'])
+            location.append(row['user']['location'])
+            followers_count.append(row['user']['followers_count'])
+            friends_count.append(row['user']['friends_count'])
+            listed_count.append(row['user']['listed_count'])
+            favourites_count.append(row['user']['favourites_count'])
+            statuses_count.append(row['user']['statuses_count'])
+        df_users = pd.DataFrame(
+            {'description': description, 'location': location, 'followers_count': followers_count,
+             'friends_count': friends_count, 'listed_count': listed_count, 'favourites_count': favourites_count,
+             'statuses_count': statuses_count})
+        df = pd.concat([df[['created_at']], df_users], axis=1)
+
         return df
 
