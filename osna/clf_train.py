@@ -5,10 +5,11 @@ import gzip
 from collections import Counter
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 import re
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction import DictVectorizer
-from sklearn.feature_extraction.text import CountVectorizer,TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.metrics import classification_report
 from scipy.sparse import csr_matrix, hstack
 import pickle
@@ -68,6 +69,7 @@ def load_data(datafile, checkfile):
 
     return df
 
+
 def read_data(directory):
     dfs = []
     for label in ['real', 'fake']:
@@ -76,7 +78,7 @@ def read_data(directory):
             df = pd.DataFrame((json.loads(line) for line in gzip.open(file)))
             df['label'] = label
             dfs.append(df)
-    df=pd.concat(dfs)[['publish_date', 'source', 'text', 'title', 'tweets', 'label']]
+    df = pd.concat(dfs)[['publish_date', 'source', 'text', 'title', 'tweets', 'label']]
     list_text = [i for i in list(df.text) if i != '']
     return df[df.text.isin(list_text)]
 
@@ -140,48 +142,49 @@ def make_features(df):
     features: np.matrix
     avg_ret = []
     avg_fav = []
-    var_desc=[]
-    var_time=[]
-    vec = TfidfVectorizer(min_df=1,ngram_range=(1, 1))
-    for j in range(len(df)):
+    var_desc = []
+    var_time = []
+    vec = TfidfVectorizer(min_df=1, ngram_range=(1, 1))
+    print('Extracting features...')
+    for j in tqdm(range(len(df)), ncols=100):
         tweets = df.tweets.values[j]
-        retweet=[]
-        favorite=[]
-        time=[]
-        list_desc=[]
-        if(len(tweets)>1):
+        retweet = []
+        favorite = []
+        time = []
+        list_desc = []
+        if len(tweets) > 1:
             for i in range(len(tweets)):
                 retweet.append(tweets[i]['retweet_count'])
                 favorite.append(tweets[i]['favorite_count'])
-                time.append(tweets[i]['created_at'][4:19]+tweets[i]['created_at'][-5:])
+                time.append(tweets[i]['created_at'][4:19] + tweets[i]['created_at'][-5:])
                 if 'description' in list(tweets[i]['user'].keys()):
-                    description=get_desc(tweets[i]['user']['description'])
+                    description = get_desc(tweets[i]['user']['description'])
                     list_desc.append(description)
-            avg_ret.append(sum(retweet)/len(tweets))
-            avg_fav.append(sum(favorite)/len(tweets))
-            time_sums=[v for k,v in Counter(time).items()]
+            avg_ret.append(sum(retweet) / len(tweets))
+            avg_fav.append(sum(favorite) / len(tweets))
+            time_sums = [v for k, v in Counter(time).items()]
             var_time.append(np.var(time_sums))
-            if(len(list_desc)>1):
-                X=vec.fit_transform(list_desc)
-                sim=cosine_similarity(X)
+            if len(list_desc) > 1:
+                X = vec.fit_transform(list_desc)
+                sim = cosine_similarity(X)
                 var_desc.append(np.var(sim))
             else:
                 var_desc.append(0.0)
-         elif(len(tweets)==1):
-              avg_ret.append(sum(retweet))
-              avg_fav.append(sum(favorite))
-              var_time.append(0.0)
-              var_desc.append(0.0)
-         else:
-              avg_ret.append(0.0)
-              avg_fav.append(0.0)
-              var_time.append(0.0)
-              var_desc.append(0.0)
-    
+        elif len(tweets) == 1:
+            avg_ret.append(sum(retweet))
+            avg_fav.append(sum(favorite))
+            var_time.append(0.0)
+            var_desc.append(0.0)
+        else:
+            avg_ret.append(0.0)
+            avg_fav.append(0.0)
+            var_time.append(0.0)
+            var_desc.append(0.0)
+
     df['avg_retweet'] = avg_ret
     df['avg_favorite'] = avg_fav
-    df['var_time']=var_time
-    df['var_desc']=var_desc
+    df['var_time'] = var_time
+    df['var_desc'] = var_desc
 
     return df
 
@@ -194,11 +197,6 @@ def quantization(f, bins):
             features.append([1 if c == i else 0 for c in cats])
     features = np.matrix(features).T
     return features
-
-
-
-
-
 
 # print('----min_df---')
 # for min_df in [1, 2, 5, 10]:

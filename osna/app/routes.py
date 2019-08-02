@@ -59,7 +59,7 @@ def predict(df):
 
     df = make_features(df)
 
-    features = df.loc[:, ['avg_retweet', 'avg_favorite']]
+    features = df.loc[:, ['avg_retweet', 'avg_favorite', 'var_time', 'var_desc']]
     features = features.to_dict('records')
 
     text = get_text(list(df.text))
@@ -78,11 +78,13 @@ def predict(df):
     proba = lr.predict_proba(x)[0]
 
     top_features = []
-    features = vec1.get_feature_names()
+    features = vec1.get_feature_names() + vecf.get_feature_names()
 
-    for j in np.argsort(lr.coef_[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop step
+    coef = [-lr.coef_[0], lr.coef_[0]]
+
+    for j in np.argsort(coef[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop step
         idx = x[0].nonzero()[1][j]
-        top_features.append({'feature': features[idx], 'coef': lr.coef_[0][idx]})
+        top_features.append({'feature': features[idx], 'coef': coef[0][idx]})
 
     return pred, proba, top_features
 
@@ -92,7 +94,7 @@ def predict2(df):
 
     df = make_features(df)
 
-    features = df.loc[:, ['avg_retweet', 'avg_favorite']]
+    features = df.loc[:, ['avg_retweet', 'avg_favorite', 'var_time', 'var_desc']]
     features = features.to_dict('records')
 
     x = vecf.transform(features)
@@ -105,9 +107,12 @@ def predict2(df):
     top_features = []
     features = vecf.get_feature_names()
 
-    for j in np.argsort(lr.coef_[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop step
+    coef = [-lr.coef_[0], lr.coef_[0]]
+
+    for j in np.argsort(coef[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop step
         idx = x[0].nonzero()[1][j]
-        top_features.append({'feature': features[idx], 'coef': lr.coef_[0][idx]})
+        top_features.append({'feature': features[idx], 'coef': coef[0][idx]})
+
 
     return pred, proba, top_features
 
@@ -136,8 +141,11 @@ def predict3(df):
     top_features = []
     features = vec1.get_feature_names()
 
-    for j in np.argsort(lr.coef_[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop step
+    coef = [-lr.coef_[0], lr.coef_[0]]
+
+    for j in np.argsort(coef[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop step
         idx = x[0].nonzero()[1][j]
-        top_features.append({'feature': features[idx], 'coef': lr.coef_[0][idx]})
+        top_features.append({'feature': features[idx], 'coef': coef[0][idx]})
+
 
     return pred, proba, top_features

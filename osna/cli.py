@@ -62,8 +62,8 @@ def train(directory):
     title = get_text(list(df.title))
     source = get_source(list(df.source))
 
-    features = df.loc[:, ['avg_retweet', 'avg_favorite','avg_followers','avg_friends','avg_listed']]
-    features = df.loc[:, ['avg_retweet', 'avg_favorite']]
+    # features = df.loc[:, ['avg_retweet', 'avg_favorite','avg_followers','avg_friends','avg_listed']]
+    features = df.loc[:, ['avg_retweet', 'avg_favorite', 'var_time', 'var_desc']]
     features = features.to_dict('records')
 
     # (2) Create classifier and vectorizer.
@@ -74,6 +74,7 @@ def train(directory):
     vec3 = CountVectorizer(min_df=1, max_df=.9, ngram_range=(1, 1))
     vecf = DictVectorizer()
 
+    print('fitting...')
     x1 = vec1.fit_transform(text)
     print(x1.shape)
     x2 = vec2.fit_transform(title)
@@ -117,7 +118,7 @@ def train(directory):
 
     df = make_features(df)
 
-    features = df.loc[:, ['avg_retweet', 'avg_favorite']]
+    features = df.loc[:, ['avg_retweet', 'avg_favorite', 'var_time', 'var_desc']]
     features = features.to_dict('records')
     # print(features)
 
