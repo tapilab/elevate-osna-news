@@ -150,7 +150,7 @@ class Twitter:
                 #if len(items) > 0:
                 tweets.extend(items)
                 since_id = tweets[-1]['user']['id'] + 1
-                tweets_num = len(new_tweets)
+                tweets_num = len(items)
                 #else:
                     #return tweets
                 df = pd.DataFrame(tweets)[['created_at','retweeted_status','user']]
