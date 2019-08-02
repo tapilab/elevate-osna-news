@@ -4,7 +4,7 @@ from scipy.sparse import hstack
 from osna.clf_train import make_features
 from . import app
 from .forms import MyForm
-from .. import credentials_path, clf_path, clf_path2
+from .. import credentials_path, clf_path, clf_path2, clf_path3
 from osna.get_wordlist import get_text, get_source
 
 import pickle
@@ -30,8 +30,6 @@ def index():
         input_field = form.input_field.data
         method = form.select_field.data
         flash(input_field)
-
-        # tweets = [tweet['full_text'] for tweet in t._get_tweets('screen_name', input_field, limit=200)]
 
         news = get_tweets(input_field)
         if method == '1':
@@ -61,17 +59,18 @@ def predict(df):
     features = df.loc[:, ['avg_retweet', 'avg_favorite', 'var_time', 'var_desc']]
     features = features.to_dict('records')
 
-    text = get_text(list(df.text))
-    # title = get_text(list(df.title))
-    # source = get_source(list(df.source))
+    # text = get_text(list(df.text))
+    title = get_text(list(df.title))
+    source = get_source(list(df.source))
 
-    x1 = vec1.transform(text)
-    # x2 = vec2.transform(title)
-    # x3 = vec3.transform(source)
+    # x1 = vec1.transform(text)
+    x2 = vec2.transform(title)
+    x3 = vec3.transform(source)
     xf = vecf.transform(features)
 
+    x = hstack([x2, x3, xf])
     # x = hstack([x1, x2, x3, xf])
-    x = hstack([x1, xf])
+    # x = hstack([x1, xf])
 
     pred = lr.predict(x)[0]
     proba = lr.predict_proba(x)[0]
@@ -117,20 +116,20 @@ def predict2(df):
 
 
 def predict3(df):
-    vec1, vec2, vec3, lr = pickle.load(open(clf_path, 'rb'))
+    vec1, vec2, vec3, lr = pickle.load(open(clf_path3, 'rb'))
 
     text = get_text(list(df.text))
-    # title = get_text(list(df.title))
-    # source = get_source(list(df.source))
+    title = get_text(list(df.title))
+    source = get_source(list(df.source))
 
     x1 = vec1.transform(text)
-    # x2 = vec2.transform(title)
-    # x3 = vec3.transform(source)
+    x2 = vec2.transform(title)
+    x3 = vec3.transform(source)
 
     # features = make_features(df)
 
-    # x = np.hstack([x1, x2, x3, features])
-    x = x1
+    x = np.hstack([x1, x2, x3])
+    # x = x1
 
     top_features = []
 
