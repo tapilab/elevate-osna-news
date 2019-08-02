@@ -15,6 +15,13 @@ from scipy.sparse import csr_matrix, hstack
 import pickle
 
 
+from nltk import pos_tag
+from nltk.stem import WordNetLemmatizer
+from osna.get_wordlist import fet_desc
+from nltk.tokenize import TweetTokenizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+
 def load_data(datafile, checkfile):
     """
     Read your data into a single pandas dataframe where
@@ -136,14 +143,50 @@ def train_and_predict(X, Y, lr, train=False):
 def make_features(df):
     ## Add your code to create features.
     features: np.matrix
-    ret = []
-    fav = []
-    for j in range(len(df.tweets)):
-        tweets2 = df.tweets.values[j]
-        ret.append(sum([tweets2[i]['retweet_count'] for i in range(len(tweets2))]) / len(tweets2))
-        fav.append(sum([tweets2[i]['favorite_count'] for i in range(len(tweets2))]) / len(tweets2))
-    df['avg_retweet'] = ret
-    df['avg_favorite'] = fav
+    avg_ret = []
+    avg_fav = []
+    var_desc=[]
+    var_time=[]
+    vec = TfidfVectorizer(min_df=1,ngram_range=(1, 1))
+    for j in range(len(df)):
+        tweets = df.tweets.values[j]
+        retweet=[]
+        favorite=[]
+        time=[]
+        list_desc=[]
+        if(len(tweets)>1):
+            for i in range(len(tweets)):
+                retweet.append(tweets[i]['retweet_count'])
+                favorite.append(tweets[i]['favorite_count'])
+                time.append(tweets[i]['created_at'][4:19]+tweets[i]['created_at'][-5:])
+                if 'description' in list(tweets[i]['user'].keys()):
+                    description=get_desc(tweets[i]['user']['description'])
+                    list_desc.append(description)
+            avg_ret.append(sum(retweet)/len(tweets))
+            avg_fav.append(sum(favorite)/len(tweets))
+            time_sums=[v for k,v in Counter(time).items()]
+            var_time.append(np.var(time_sums))
+            if(len(list_desc)>1):
+                X=vec.fit_transform(list_desc)
+                sim=cosine_similarity(X)
+                var_desc.append(np.var(sim))
+            else:
+                var_desc.append(0.0)
+         elif(len(tweets)==1):
+              avg_ret.append(sum(retweet))
+              avg_fav.append(sum(favorite))
+              var_time.append(0.0)
+              var_desc.append(0.0)
+         else:
+              avg_ret.append(0.0)
+              avg_fav.append(0.0)
+              var_time.append(0.0)
+              var_desc.append(0.0)
+    
+    df['avg_retweet'] = avg_ret
+    df['avg_favorite'] = avg_fav
+    df['var_time']=var_time
+    df['var_desc']=var_desc
 
     return df
 
@@ -156,6 +199,8 @@ def quantization(f, bins):
             features.append([1 if c == i else 0 for c in cats])
     features = np.matrix(features).T
     return features
+
+
 
 
 
