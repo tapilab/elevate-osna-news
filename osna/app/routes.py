@@ -145,5 +145,4 @@ def predict3(df):
         idx = x[0].nonzero()[1][j]
         top_features.append({'feature': features[idx], 'coef': coef[0][idx]})
 
-
     return pred, proba, top_features
