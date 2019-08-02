@@ -8,17 +8,12 @@ import pandas as pd
 import re
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction import DictVectorizer
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer,TfidfVectorizer
 from sklearn.metrics import classification_report
 from scipy.sparse import csr_matrix, hstack
 import pickle
 
-
-from nltk import pos_tag
-from nltk.stem import WordNetLemmatizer
-from osna.get_wordlist import fet_desc
-from nltk.tokenize import TweetTokenizer
+from osna.get_wordlist import get_desc
 from sklearn.metrics.pairwise import cosine_similarity
 
 
