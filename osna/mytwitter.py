@@ -12,6 +12,7 @@ import pandas as pd
 
 RATE_LIMIT_CODES = set([88, 130, 420, 429])
 
+
 class Twitter:
     def __init__(self, credential_file):
         """
@@ -143,7 +144,7 @@ class Twitter:
         tweets = []
         since_id = 0
         tweets_num = 0
-        while(tweets_num < 500):
+        while tweets_num < 500:
             response = self.request('search/tweets',{'q':identifier,'count':100,'since_id':since_id})
             if response.status_code == 200:  # success
                 items = [t for t in response]
@@ -181,4 +182,12 @@ class Twitter:
         df = pd.concat([df[['created_at']], df_users], axis=1)
 
         return df
+
+    def _search_tweets(self, identifier):
+        since_id = 0
+        response = self.request('search/tweets', {'q': identifier, 'count': 15, 'since_id': since_id})
+        if response.status_code == 200:  # success
+            return [t for t in response][0]
+
+
 

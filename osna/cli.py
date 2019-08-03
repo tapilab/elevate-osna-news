@@ -58,7 +58,7 @@ def train(directory):
 
     df = make_features(df)
 
-    text = get_text(list(df.text))
+    # text = get_text(list(df.text))
     title = get_text(list(df.title))
     source = get_source(list(df.source))
 
@@ -75,8 +75,8 @@ def train(directory):
     vecf = DictVectorizer()
 
     print('fitting...')
-    x1 = vec1.fit_transform(text)
-    print(x1.shape)
+    # x1 = vec1.fit_transform(text)
+    # print(x1.shape)
     x2 = vec2.fit_transform(title)
     print(x2.shape)
     x3 = vec3.fit_transform(source)
@@ -84,7 +84,8 @@ def train(directory):
     xf = vecf.fit_transform(features)
     print(xf.shape)
 
-    x = hstack([x1, x2, x3, xf])
+    x = hstack([x2, x3, xf])
+    # x = hstack([x1, x2, x3, xf])
     print(x.shape)
 
     y = np.array(df.label)
