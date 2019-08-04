@@ -21,6 +21,8 @@ from osna.clf_train import train_and_predict, make_features, read_data
 from osna.get_wordlist import get_text, get_source
 from . import credentials_path, clf_path, clf_path2, clf_path3
 
+from tensorflow.python.keras.layers import Dropout, Flatten
+
 
 @click.group()
 def main(args=None):
@@ -92,6 +94,72 @@ def train(directory):
 
     # (3) do cross-validation and print out validation metrics
     # (classification_report)
+    train_and_predict(x, y, lr)
+
+    # (4) Finally, train on ALL data one final time and
+    # train...
+    clf = train_and_predict(x, y, lr, train=True)
+    # save the classifier
+    pickle.dump((vec1, vec2, vec3, vecf, clf), open(clf_path, 'wb'))
+
+
+@main.command('train4')
+@click.argument('directory', type=click.Path(exists=True))
+def train(directory):
+    """
+    Train a classifier and save it.
+    """
+    print('reading from %s' % directory)
+
+    # (1) Read the data...
+    df = read_data(directory)
+
+    df = make_features(df)
+
+    # text = get_text(list(df.text))
+    title = get_text(list(df.title))
+    source = get_source(list(df.source))
+
+    # features = df.loc[:, ['avg_retweet', 'avg_favorite','avg_followers','avg_friends','avg_listed']]
+    features = df.loc[:, ['avg_retweet', 'avg_favorite', 'var_time', 'var_desc']]
+    features = features.to_dict('records')
+
+    # (2) Create classifier and vectorizer.
+    # set best parameters
+    vec1 = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3), stop_words='english')
+    vec2 = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3), stop_words='english')
+    vec3 = CountVectorizer(min_df=1, max_df=.9, ngram_range=(1, 1))
+    vecf = DictVectorizer()
+
+    print('fitting...')
+    # x1 = vec1.fit_transform(text)
+    # print(x1.shape)
+    x2 = vec2.fit_transform(title)
+    print(x2.shape)
+    x3 = vec3.fit_transform(source)
+    print(x3.shape)
+    xf = vecf.fit_transform(features)
+    print(xf.shape)
+
+    x = hstack([x2, x3, xf])
+    # x = hstack([x1, x2, x3, xf])
+    print(x.shape)
+
+    y = np.array(df.label)
+
+    # (3) do cross-validation and print out validation metrics
+    # (classification_report)
+
+
+    dropout_rate = .5
+    model = keras.Sequential()
+    model.add(keras.layers.Dense(16, input_shape=(9969,)))
+    model.add(keras.layers.Dense(16, activation='relu'))
+    model.add(Dropout(rate=dropout_rate))
+    model.add(keras.layers.Dense(1, activation='sigmoid'))
+    model.summary()
+
+
     train_and_predict(x, y, lr)
 
     # (4) Finally, train on ALL data one final time and

@@ -76,7 +76,7 @@ def predict(df):
     proba = lr.predict_proba(x)[0]
 
     top_features = []
-    features = vec1.get_feature_names() + vecf.get_feature_names()
+    features = vec2.get_feature_names() + vec3.get_feature_names() + vecf.get_feature_names()
 
     coef = [-lr.coef_[0], lr.coef_[0]]
 
