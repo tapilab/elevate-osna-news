@@ -36,10 +36,10 @@ def index():
         news = get_tweets(input_field)
         if method == '1':
             pred, proba, top_features = predict(news)
-        elif method == '2':
+        else:
             pred, proba, top_features = predict_(news)
 
-        return render_template('myform.html', title='', form=form, news=news, pred=pred, proba=max(proba * 100),
+        return render_template('myform.html', title='', form=form, news=news.title[0], pred=pred, proba=max(proba * 100),
                                top_features=top_features)
     return render_template('myform.html', title='', form=form)
 
@@ -52,7 +52,7 @@ def get_tweets(input_field):
 
 
 def predict(df):
-    vec1, vec2, vec3, vecf, lr = pickle.load(open(clf_path, 'rb'))
+    vec2, vec3, vecf, lr = pickle.load(open(clf_path, 'rb'))
 
     df = make_features(df)
 
@@ -76,13 +76,13 @@ def predict(df):
     proba = lr.predict_proba(x)[0]
 
     top_features = []
-    features = vec2.get_feature_names() + vec3.get_feature_names() + vecf.get_feature_names()
+    features = np.array(vec2.get_feature_names() + vec3.get_feature_names() + vecf.get_feature_names())
 
-    coef = [-lr.coef_[0], lr.coef_[0]]
+    x=x.todense()
 
-    for j in np.argsort(coef[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop step
+    for j in np.argsort(lr.coef_[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop ste
         idx = x[0].nonzero()[1][j]
-        top_features.append({'feature': features[idx], 'coef': coef[0][idx]})
+        top_features.append({'feature': features[idx], 'coef': lr.coef_[0][idx]})
 
     return pred, proba, top_features
 
