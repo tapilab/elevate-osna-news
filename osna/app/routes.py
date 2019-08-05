@@ -4,7 +4,7 @@ from scipy.sparse import hstack
 from osna.clf_train import make_features
 from . import app
 from .forms import MyForm
-from .. import credentials_path, clf_path, clf_path2, clf_path3
+from .. import credentials_path, clf_path, clf_path2, clf_path3, clf_path_
 from osna.get_wordlist import get_text, get_source
 
 import pickle
@@ -15,6 +15,8 @@ import json
 from TwitterAPI import TwitterAPI
 from ..mytwitter import Twitter
 
+from keras.layers import Dropout, Flatten
+import keras
 
 # clf, vec = pickle.load(open(clf_path, 'rb'))
 # print('read clf %s' % str(clf))
@@ -87,8 +89,8 @@ def predict(df):
     return pred, proba, top_features
 
 
-def predict2(df):
-    vecf, lr = pickle.load(open(clf_path2, 'rb'))
+def predict_(df):
+    vec2, vec3, vecf, model = pickle.load(open(clf_path_, 'rb'))
 
     df = make_features(df)
 
@@ -99,50 +101,50 @@ def predict2(df):
 
     top_features = []
 
-    pred = lr.predict(x)[0]
-    proba = lr.predict_proba(x)[0]
+    pred = model.predict(x)
+    proba = model.predict_proba(x)[0]
 
     top_features = []
-    features = vecf.get_feature_names()
-
-    coef = [-lr.coef_[0], lr.coef_[0]]
-
-    for j in np.argsort(coef[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop step
-        idx = x[0].nonzero()[1][j]
-        top_features.append({'feature': features[idx], 'coef': coef[0][idx]})
+    # features = vecf.get_feature_names()
+    #
+    # coef = [-lr.coef_[0], lr.coef_[0]]
+    #
+    # for j in np.argsort(coef[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop step
+    #     idx = x[0].nonzero()[1][j]
+    #     top_features.append({'feature': features[idx], 'coef': coef[0][idx]})
 
 
     return pred, proba, top_features
 
 
-def predict3(df):
-    vec1, vec2, vec3, lr = pickle.load(open(clf_path3, 'rb'))
-
-    text = get_text(list(df.text))
-    title = get_text(list(df.title))
-    source = get_source(list(df.source))
-
-    x1 = vec1.transform(text)
-    x2 = vec2.transform(title)
-    x3 = vec3.transform(source)
-
-    # features = make_features(df)
-
-    x = np.hstack([x1, x2, x3])
-    # x = x1
-
-    top_features = []
-
-    pred = lr.predict(x)[0]
-    proba = lr.predict_proba(x)[0]
-
-    top_features = []
-    features = vec1.get_feature_names()
-
-    coef = [-lr.coef_[0], lr.coef_[0]]
-
-    for j in np.argsort(coef[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop step
-        idx = x[0].nonzero()[1][j]
-        top_features.append({'feature': features[idx], 'coef': coef[0][idx]})
-
-    return pred, proba, top_features
+# def predict3(df):
+#     vec1, vec2, vec3, lr = pickle.load(open(clf_path3, 'rb'))
+#
+#     text = get_text(list(df.text))
+#     title = get_text(list(df.title))
+#     source = get_source(list(df.source))
+#
+#     x1 = vec1.transform(text)
+#     x2 = vec2.transform(title)
+#     x3 = vec3.transform(source)
+#
+#     # features = make_features(df)
+#
+#     x = np.hstack([x1, x2, x3])
+#     # x = x1
+#
+#     top_features = []
+#
+#     pred = lr.predict(x)[0]
+#     proba = lr.predict_proba(x)[0]
+#
+#     top_features = []
+#     features = vec1.get_feature_names()
+#
+#     coef = [-lr.coef_[0], lr.coef_[0]]
+#
+#     for j in np.argsort(coef[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop step
+#         idx = x[0].nonzero()[1][j]
+#         top_features.append({'feature': features[idx], 'coef': coef[0][idx]})
+#
+#     return pred, proba, top_features
