@@ -35,9 +35,9 @@ config_path = osna_path + 'osna.cfg'
 # twitter credentials.
 credentials_path = osna_path + os.path.sep +'credentials.json'
 # classifier
-clf_path = osna_path + os.path.sep + 'clf.pkl'
-clf_path2 = osna_path + os.path.sep + 'clf2.pkl'
-clf_path3 = osna_path + os.path.sep + 'clf3.pkl'
+clf_path = osna_path + 'clf.pkl'
+clf_path2 = osna_path + 'clf2.pkl'
+clf_path3 = osna_path + 'clf3.pkl'
 
 # write default config if not present.
 if not os.path.isfile(config_path):
