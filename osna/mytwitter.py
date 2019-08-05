@@ -157,29 +157,16 @@ class Twitter:
                     break
             else:
                 sys.stderr.write('error')
-                return tweets
+                break
 
-        df = pd.DataFrame(tweets)[['created_at', 'retweeted_status', 'user']]
-        description = []
-        location = []
-        followers_count = []
-        friends_count = []
-        listed_count = []
-        favourites_count = []
-        statuses_count = []
-        for i, row in df.iterrows():
-            description.append(row['user']['description'])
-            location.append(row['user']['location'])
-            followers_count.append(row['user']['followers_count'])
-            friends_count.append(row['user']['friends_count'])
-            listed_count.append(row['user']['listed_count'])
-            favourites_count.append(row['user']['favourites_count'])
-            statuses_count.append(row['user']['statuses_count'])
-        df_users = pd.DataFrame(
-            {'description': description, 'location': location, 'followers_count': followers_count,
-             'friends_count': friends_count, 'listed_count': listed_count, 'favourites_count': favourites_count,
-             'statuses_count': statuses_count})
-        df = pd.concat([df[['created_at']], df_users], axis=1)
+        for tweet in tweets:
+            try:
+                title = tweet['retweeted_status']['text']
+                break
+            except:
+                continue
+
+        df = pd.DataFrame({'source': identifier, 'title': title, 'tweets': [tweets]})
 
         return df
 
