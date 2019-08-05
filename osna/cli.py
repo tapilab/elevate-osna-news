@@ -17,11 +17,13 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score, classification_report
 
 from scipy.sparse import csr_matrix, hstack
+
 from osna.clf_train import train_and_predict, make_features, read_data
 from osna.get_wordlist import get_text, get_source
 from . import credentials_path, clf_path, clf_path2, clf_path3
 
-from tensorflow.python.keras.layers import Dropout, Flatten
+from keras.layers import Dropout, Flatten
+import keras
 
 
 @click.group()
@@ -112,7 +114,7 @@ def train(directory):
     print('reading from %s' % directory)
 
     # (1) Read the data...
-    df = read_data(directory)
+    df = read_data(directory).iloc[-100:]
 
     df = make_features(df)
 
@@ -141,9 +143,9 @@ def train(directory):
     xf = vecf.fit_transform(features)
     print(xf.shape)
 
-    x = hstack([x2, x3, xf])
+    X = hstack([x2, x3, xf])
     # x = hstack([x1, x2, x3, xf])
-    print(x.shape)
+    print(X.shape)
 
     y = np.array(df.label)
 
@@ -159,14 +161,70 @@ def train(directory):
     model.add(keras.layers.Dense(1, activation='sigmoid'))
     model.summary()
 
+    model.compile(optimizer='adam',
+                  loss='binary_crossentropy',
+                  metrics=['accuracy'])
 
-    train_and_predict(x, y, lr)
+    np.random.seed(116)
+    np.random.shuffle(X)
+    np.random.seed(116)
+    np.random.shuffle(y)
 
-    # (4) Finally, train on ALL data one final time and
-    # train...
-    clf = train_and_predict(x, y, lr, train=True)
+    x_val = X[:300]
+    partial_x_train = X[300:500]
+
+    y_val = y[:300]
+    partial_y_train = y[300:500]
+
+    testX = X[500:]
+    testy = y[500:]
+
+    history = model.fit(partial_x_train,
+                        partial_y_train,
+                        epochs=120,
+                        batch_size=512,
+                        validation_data=(x_val, y_val),
+                        verbose=1)
+
+    results = model.evaluate(testX, testy)
+
+    print(results)
+
+    history_dict = history.history
+
+    import matplotlib.pyplot as plt
+
+    acc = history_dict['acc']
+    val_acc = history_dict['val_acc']
+    loss = history_dict['loss']
+    val_loss = history_dict['val_loss']
+
+    epochs = range(1, len(acc) + 1)
+
+    # "bo" is for "blue dot"
+    plt.plot(epochs, loss, 'bo', label='Training loss')
+    # b is for "solid blue line"
+    plt.plot(epochs, val_loss, 'b', label='Validation loss')
+    plt.title('Training and validation loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+
+    plt.show()
+
+    plt.clf()  # clear figure
+
+    plt.plot(epochs, acc, 'bo', label='Training acc')
+    plt.plot(epochs, val_acc, 'b', label='Validation acc')
+    plt.title('Training and validation accuracy')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.legend()
+
+    plt.show()
+
     # save the classifier
-    pickle.dump((vec1, vec2, vec3, vecf, clf), open(clf_path, 'wb'))
+    pickle.dump((vec1, vec2, vec3, vecf, model), open(clf_path, 'wb'))
 
 
 @main.command('train2')
