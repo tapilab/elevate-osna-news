@@ -39,6 +39,11 @@ clf_path = osna_path + os.path.sep + 'clf.pkl'
 clf_path2 = osna_path + os.path.sep + 'clf2.pkl'
 clf_path3 = osna_path + os.path.sep + 'clf3.pkl'
 clf_path_ = osna_path + os.path.sep + 'clf_.pkl'
+
+# tweet num limit
+
+num_limit = 500
+
 # write default config if not present.
 if not os.path.isfile(config_path):
     write_default_config(config_path)
