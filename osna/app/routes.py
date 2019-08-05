@@ -37,9 +37,7 @@ def index():
         if method == '1':
             pred, proba, top_features = predict(news)
         elif method == '2':
-            pred, proba, top_features = predict2(news)
-        else:
-            pred, proba, top_features = predict3(news)
+            pred, proba, top_features = predict_(news)
 
         return render_template('myform.html', title='', form=form, news=news, pred=pred, proba=max(proba * 100),
                                top_features=top_features)

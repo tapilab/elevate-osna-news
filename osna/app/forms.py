@@ -10,8 +10,7 @@ class MyForm(FlaskForm):
     input_field = StringField(label='input:', id='input_field',
                               validators=[DataRequired()])
     select_field = SelectField(label='method:', id='select_field',
-                               choices=[('1', 'text & user feature'),
-                                        ('2', 'user feature'),
-                                        ('3', 'text')])
+                               choices=[('1', 'Logistic Regression'),
+                                        ('2', 'neural network')])
 
     submit = SubmitField('Submit')
