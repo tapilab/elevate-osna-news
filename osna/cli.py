@@ -62,7 +62,6 @@ def train(directory):
 
     df = make_features(df)
 
-    # text = get_text(list(df.text))
     title = get_text(list(df.title))
     source = get_source(list(df.source))
 
@@ -73,14 +72,11 @@ def train(directory):
     # (2) Create classifier and vectorizer.
     # set best parameters
     lr = LogisticRegression(C=10, penalty='l2')
-    vec1 = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3), stop_words='english')
     vec2 = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3), stop_words='english')
     vec3 = CountVectorizer(min_df=1, max_df=.9, ngram_range=(1, 1))
     vecf = DictVectorizer()
 
     print('fitting...')
-    # x1 = vec1.fit_transform(text)
-    # print(x1.shape)
     x2 = vec2.fit_transform(title)
     print(x2.shape)
     x3 = vec3.fit_transform(source)
@@ -89,7 +85,6 @@ def train(directory):
     print(xf.shape)
 
     x = hstack([x2, x3, xf])
-    # x = hstack([x1, x2, x3, xf])
     print(x.shape)
 
     y = np.array(df.label)
@@ -102,7 +97,7 @@ def train(directory):
     # train...
     clf = train_and_predict(x, y, lr, train=True)
     # save the classifier
-    pickle.dump((vec1, vec2, vec3, vecf, clf), open(clf_path, 'wb'))
+    pickle.dump((vec2, vec3, vecf, clf), open(clf_path, 'wb'))
 
 
 @main.command('train_')
@@ -126,7 +121,6 @@ def train(directory):
 
     # (2) Create classifier and vectorizer.
     # set best parameters
-    # vec1 = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3), stop_words='english')
     vec2 = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3), stop_words='english')
     vec3 = CountVectorizer(min_df=1, max_df=.9, ngram_range=(1, 1))
     vecf = DictVectorizer()
@@ -166,7 +160,7 @@ def train(directory):
     # (3) do cross-validation and print out validation metrics
     # (classification_report)
 
-    dropout_rate = .5
+    dropout_rate = .1
     model = keras.Sequential()
     model.add(keras.layers.Dense(16, input_shape=(1195,)))
     model.add(keras.layers.Dense(16, activation='relu'))
