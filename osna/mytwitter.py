@@ -161,7 +161,7 @@ class Twitter:
                 break
 
         g = Goose()
-        article = g.extract(url=url)
+        article = g.extract(url=identifier)
         title = article.title
         text = article.cleaned_text
 

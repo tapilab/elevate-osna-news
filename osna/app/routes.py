@@ -35,12 +35,14 @@ def index():
 
         news = get_tweets(input_field)
         if method == '1':
-            pred, proba, top_features = predict(news)
+            pred, proba, top_features, title, text = predict(news)
+            return render_template('myform.html', title='', form=form, news_title=title, news=text, pred=pred,
+                                   proba=max(proba * 100),
+                                   top_features=top_features)
         else:
-            pred, proba, top_features = predict_(news)
-
-        return render_template('myform.html', title='', form=form, news=news.title[0], pred=pred, proba=max(proba * 100),
-                               top_features=top_features)
+            pred, proba, title, text = predict_(news)
+            return render_template('myform.html', title='', form=form, news_title=title, news=text, pred=pred,
+                                   proba=max(proba * 100))
     return render_template('myform.html', title='', form=form)
 
 
@@ -68,9 +70,7 @@ def predict(df):
     x3 = vec3.transform(source)
     xf = vecf.transform(features)
 
-    # x = hstack([x2, x3, xf])
     x = hstack([x1, x2, x3, xf])
-    # x = hstack([x1, xf])
 
     pred = lr.predict(x)[0]
     proba = lr.predict_proba(x)[0]
@@ -80,11 +80,11 @@ def predict(df):
 
     x = x.tocsr()
 
-    for j in np.argsort(lr.coef_[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop ste
+    for j in np.argsort(lr.coef_[0][x[0].nonzero()[1]])[::-1][:15]:  # start stop ste
         idx = x[0].nonzero()[1][j]
         top_features.append({'feature': features[idx], 'coef': lr.coef_[0][idx]})
 
-    return pred, proba, top_features
+    return pred, proba, top_features, list(df.title)[0], list(df.text)[0]
 
 
 def predict_(df):
@@ -95,8 +95,6 @@ def predict_(df):
     features = df.loc[:, ['avg_retweet', 'avg_favorite', 'var_time', 'var_desc']]
     features = features.to_dict('records')
 
-    xf = vecf.transform(features)
-
     text = get_text(list(df.text))
     title = get_text(list(df.title))
     source = get_source(list(df.source))
@@ -106,15 +104,18 @@ def predict_(df):
     x3 = vec3.transform(source)
     xf = vecf.transform(features)
 
-    x = hstack([x1, x2, x3, xf])
+    x = hstack([x1, x2, x3, xf]).tocsr()
 
     pred = model.predict(x)
-    proba = model.predict_proba(x)[0]
 
-    top_features = []
+    proba = max(pred[0], 1-pred[0])
 
-    return pred, proba, top_features
+    if pred[0] < 0.5:
+        pred = 'fake'
+    else:
+        pred = 'real'
 
+    return pred, proba, list(df.title)[0], list(df.text)[0]
 
 # def predict3(df):
 #     vec1, vec2, vec3, lr = pickle.load(open(clf_path3, 'rb'))

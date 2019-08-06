@@ -146,7 +146,7 @@ def make_features(df):
     var_time = []
     vec = TfidfVectorizer(min_df=1, ngram_range=(1, 1))
     print('Extracting features...')
-    for j in tqdm(range(len(df)), ncols=100):
+    for j in tqdm(range(len(df)), ncols=80):
         tweets = df.tweets.values[j]
         retweet = []
         favorite = []

@@ -29,6 +29,8 @@ from keras.layers import Dropout, Flatten
 import keras
 
 
+
+
 @click.group()
 def main(args=None):
     """Console script for osna."""
@@ -61,7 +63,7 @@ def train(directory):
     print('reading from %s' % directory)
 
     # (1) Read the data...
-    df = read_data(directory)[-10:]
+    df = read_data(directory)
 
     df = make_features(df)
 
@@ -92,6 +94,7 @@ def train(directory):
     print(xf.shape)
 
     x = hstack([x1, x2, x3, xf])
+    x = x.tocsr()
     print(x.shape)
 
     y = np.array(df.label)
@@ -107,11 +110,11 @@ def train(directory):
     top_features = []
     features = np.array(vec1.get_feature_names() + vec2.get_feature_names() + vec3.get_feature_names() + vecf.get_feature_names())
 
-    x = x.tocsr()
-
-    for j in np.argsort(clf.coef_[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop ste
+    for j in np.argsort(clf.coef_[0][x[0].nonzero()[1]])[::-1][:50]:  # start stop ste
         idx = x[0].nonzero()[1][j]
         top_features.append({'feature': features[idx], 'coef': clf.coef_[0][idx]})
+    print(top_features)
+    print(pd.DataFrame(top_features))
 
     # save the classifier
     pickle.dump((vec1, vec2, vec3, vecf, clf), open(clf_path, 'wb'))
