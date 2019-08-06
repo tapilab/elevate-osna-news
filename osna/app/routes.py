@@ -52,33 +52,33 @@ def get_tweets(input_field):
 
 
 def predict(df):
-    vec2, vec3, vecf, lr = pickle.load(open(clf_path, 'rb'))
+    vec1, vec2, vec3, vecf, lr = pickle.load(open(clf_path, 'rb'))
 
     df = make_features(df)
 
     features = df.loc[:, ['avg_retweet', 'avg_favorite', 'var_time', 'var_desc']]
     features = features.to_dict('records')
 
-    # text = get_text(list(df.text))
+    text = get_text(list(df.text))
     title = get_text(list(df.title))
     source = get_source(list(df.source))
 
-    # x1 = vec1.transform(text)
+    x1 = vec1.transform(text)
     x2 = vec2.transform(title)
     x3 = vec3.transform(source)
     xf = vecf.transform(features)
 
-    x = hstack([x2, x3, xf])
-    # x = hstack([x1, x2, x3, xf])
+    # x = hstack([x2, x3, xf])
+    x = hstack([x1, x2, x3, xf])
     # x = hstack([x1, xf])
 
     pred = lr.predict(x)[0]
     proba = lr.predict_proba(x)[0]
 
     top_features = []
-    features = np.array(vec2.get_feature_names() + vec3.get_feature_names() + vecf.get_feature_names())
+    features = np.array(vec1.get_feature_names() + vec2.get_feature_names() + vec3.get_feature_names() + vecf.get_feature_names())
 
-    x=x.todense()
+    x = x.tocsr()
 
     for j in np.argsort(lr.coef_[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop ste
         idx = x[0].nonzero()[1][j]
@@ -88,29 +88,30 @@ def predict(df):
 
 
 def predict_(df):
-    vec2, vec3, vecf, model = pickle.load(open(clf_path_, 'rb'))
+    vec1, vec2, vec3, vecf, model = pickle.load(open(clf_path_, 'rb'))
 
     df = make_features(df)
 
     features = df.loc[:, ['avg_retweet', 'avg_favorite', 'var_time', 'var_desc']]
     features = features.to_dict('records')
 
-    x = vecf.transform(features)
+    xf = vecf.transform(features)
 
-    top_features = []
+    text = get_text(list(df.text))
+    title = get_text(list(df.title))
+    source = get_source(list(df.source))
+
+    x1 = vec1.transform(text)
+    x2 = vec2.transform(title)
+    x3 = vec3.transform(source)
+    xf = vecf.transform(features)
+
+    x = hstack([x1, x2, x3, xf])
 
     pred = model.predict(x)
     proba = model.predict_proba(x)[0]
 
     top_features = []
-    # features = vecf.get_feature_names()
-    #
-    # coef = [-lr.coef_[0], lr.coef_[0]]
-    #
-    # for j in np.argsort(coef[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop step
-    #     idx = x[0].nonzero()[1][j]
-    #     top_features.append({'feature': features[idx], 'coef': coef[0][idx]})
-
 
     return pred, proba, top_features
 

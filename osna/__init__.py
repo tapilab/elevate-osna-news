@@ -30,6 +30,7 @@ try:
 except:
     pass
 
+
 # main config file.
 config_path = osna_path + 'osna.cfg'
 # twitter credentials.

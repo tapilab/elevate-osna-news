@@ -13,6 +13,9 @@ import re
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
+from sklearn.neural_network import MLPClassifier
+from sklearn.ensemble import RandomForestClassifier
+
 from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score, classification_report
 
@@ -58,10 +61,11 @@ def train(directory):
     print('reading from %s' % directory)
 
     # (1) Read the data...
-    df = read_data(directory)
+    df = read_data(directory)[-10:]
 
     df = make_features(df)
 
+    text = get_text(list(df.text))
     title = get_text(list(df.title))
     source = get_source(list(df.source))
 
@@ -72,11 +76,14 @@ def train(directory):
     # (2) Create classifier and vectorizer.
     # set best parameters
     lr = LogisticRegression(C=10, penalty='l2')
+    vec1 = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3), stop_words='english')
     vec2 = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3), stop_words='english')
     vec3 = CountVectorizer(min_df=1, max_df=.9, ngram_range=(1, 1))
     vecf = DictVectorizer()
 
     print('fitting...')
+    x1 = vec1.fit_transform(text)
+    print(x1.shape)
     x2 = vec2.fit_transform(title)
     print(x2.shape)
     x3 = vec3.fit_transform(source)
@@ -84,7 +91,7 @@ def train(directory):
     xf = vecf.fit_transform(features)
     print(xf.shape)
 
-    x = hstack([x2, x3, xf])
+    x = hstack([x1, x2, x3, xf])
     print(x.shape)
 
     y = np.array(df.label)
@@ -96,8 +103,18 @@ def train(directory):
     # (4) Finally, train on ALL data one final time and
     # train...
     clf = train_and_predict(x, y, lr, train=True)
+
+    top_features = []
+    features = np.array(vec1.get_feature_names() + vec2.get_feature_names() + vec3.get_feature_names() + vecf.get_feature_names())
+
+    x = x.tocsr()
+
+    for j in np.argsort(clf.coef_[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop ste
+        idx = x[0].nonzero()[1][j]
+        top_features.append({'feature': features[idx], 'coef': clf.coef_[0][idx]})
+
     # save the classifier
-    pickle.dump((vec2, vec3, vecf, clf), open(clf_path, 'wb'))
+    pickle.dump((vec1, vec2, vec3, vecf, clf), open(clf_path, 'wb'))
 
 
 @main.command('train_')
@@ -113,6 +130,7 @@ def train(directory):
 
     df = make_features(df)
 
+    text = get_text(list(df.text))
     title = get_text(list(df.title))
     source = get_source(list(df.source))
 
@@ -121,11 +139,14 @@ def train(directory):
 
     # (2) Create classifier and vectorizer.
     # set best parameters
+    vec1 = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3), stop_words='english')
     vec2 = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3), stop_words='english')
     vec3 = CountVectorizer(min_df=1, max_df=.9, ngram_range=(1, 1))
     vecf = DictVectorizer()
 
     print('fitting...')
+    x1 = vec1.fit_transform(text)
+    print(x1.shape)
     x2 = vec2.fit_transform(title)
     print(x2.shape)
     x3 = vec3.fit_transform(source)
@@ -133,7 +154,7 @@ def train(directory):
     xf = vecf.fit_transform(features)
     print(xf.shape)
 
-    X = hstack([x2, x3, xf])
+    X = hstack([x1, x2, x3, xf])
 
     np.set_printoptions(threshold=10000)
 
@@ -141,9 +162,9 @@ def train(directory):
     X = np.array(X)
 
     print(X.shape)
-    # pickle.dump(X, open('X.pkl', 'wb'))
+    pickle.dump(X, open('X.pkl', 'wb'))
 
-    X = pickle.load(open('X.pkl', 'rb'))
+    # X = pickle.load(open('X.pkl', 'rb'))
 
     y = np.array(df.label)
 
@@ -153,7 +174,7 @@ def train(directory):
         else:
             y[i] = 1
 
-    # pickle.dump(y, open('y.pkl', 'wb'))
+    pickle.dump(y, open('y.pkl', 'wb'))
 
     # y = pickle.load(open('y.pkl', 'rb'))
 
@@ -162,7 +183,7 @@ def train(directory):
 
     dropout_rate = .1
     model = keras.Sequential()
-    model.add(keras.layers.Dense(16, input_shape=(1195,)))
+    model.add(keras.layers.Dense(16, input_shape=(X.shape[1],)))
     model.add(keras.layers.Dense(16, activation='relu'))
     model.add(Dropout(rate=dropout_rate))
     model.add(keras.layers.Dense(1, activation='sigmoid'))
@@ -231,7 +252,105 @@ def train(directory):
     plt.show()
 
     # save the classifier
-    pickle.dump((vec2, vec3, vecf, model), open(clf_path_, 'wb'))
+    pickle.dump((vec1, vec2, vec3, vecf, model), open(clf_path_, 'wb'))
+
+
+@main.command('train2')
+@click.argument('directory', type=click.Path(exists=True))
+def train(directory):
+    df = read_data(directory)
+
+    X = pickle.load(open('X.pkl', 'rb')).tocsr()
+    print(X.shape)
+    y = df.label
+    print(y.shape)
+
+    # (3) do cross-validation and print out validation metrics
+    # (classification_report)
+
+    print('MLP----hidden_layer_sizes---')
+    accdf = pd.DataFrame(np.random.randn(3, 3), index=['1', '2', '3'],
+                         columns=['hidden_layer_sizes', 'Accuracy', 'std'])
+    for i, hidden_layer_sizes in zip([0, 1, 2], [10, 50, 100, 200]):
+        MP = MLPClassifier(hidden_layer_sizes=(hidden_layer_sizes,))
+        Y = y
+        kf = KFold(n_splits=5, shuffle=True, random_state=42)
+        accuracies = []
+        for train, test in kf.split(X):
+            MP.fit(X[train], Y[train])
+            pred = MP.predict(X[test])
+            accuracies.append(accuracy_score(Y[test], pred))
+        mean_acc = np.mean(accuracies)
+        std = np.std(accuracies)
+        accdf['hidden_layer_sizes'][i] = hidden_layer_sizes
+        accdf['Accuracy'][i] = mean_acc
+        accdf['std'][i] = std
+    print(accdf)
+
+    print('MLP----alpha---')
+    accdf = pd.DataFrame(np.random.randn(3, 3), index=['1', '2', '3'],columns=['alpha', 'Accuracy','std'])
+    for i,alpha in zip([0,1,2],[.001,.0001,.00001]):
+        MP = MLPClassifier(alpha = alpha)
+        Y = y
+        kf = KFold(n_splits=5, shuffle=True, random_state=42)
+        accuracies = []
+        for train, test in kf.split(X):
+            MP.fit(X[train], Y[train])
+            pred = MP.predict(X[test])
+            accuracies.append(accuracy_score(Y[test], pred))
+        mean_acc = np.mean(accuracies)
+        std = np.std(accuracies)
+        accdf['alpha'][i] = alpha
+        accdf['Accuracy'][i] = mean_acc
+        accdf['std'][i] = std
+    print(accdf)
+
+    print('RandomForest----min_samples_leaf---')
+    accdf = pd.DataFrame(np.random.randn(3, 3), index=['1', '2', '3'], columns=['min_samples_leaf', 'Accuracy', 'std'])
+
+    for i, min_samples_leaf in zip([0, 1, 2], [1, 3, 5]):
+        RFC = RandomForestClassifier(min_samples_leaf=min_samples_leaf)
+
+        Y = y
+        kf = KFold(n_splits=5, shuffle=True, random_state=42)
+        accuracies = []
+        for train, test in kf.split(X):
+            RFC.fit(X[train], Y[train])
+            pred = RFC.predict(X[test])
+            accuracies.append(accuracy_score(Y[test], pred))
+        mean_acc = np.mean(accuracies)
+        std = np.std(accuracies)
+        accdf['min_samples_leaf'][i] = min_samples_leaf
+        accdf['Accuracy'][i] = mean_acc
+        accdf['std'][i] = std
+    print(accdf)
+
+
+    print('RandomForest----n_estimators---')
+    accdf = pd.DataFrame(np.random.randn(3, 3), index=['1', '2', '3'], columns=['n_estimators', 'Accuracy', 'std'])
+    for i, n_estimators in zip([0, 1, 2], [100, 200, 300]):
+        #     print('==================n_estimators : %d ================' %(n_estimators))
+        RFC = RandomForestClassifier(n_estimators=n_estimators)
+
+        Y = y
+        kf = KFold(n_splits=5, shuffle=True, random_state=42)
+        accuracies = []
+        for train, test in kf.split(X):
+            RFC.fit(X[train], Y[train])
+            pred = RFC.predict(X[test])
+            accuracies.append(accuracy_score(Y[test], pred))
+        #         print(classification_report(Y[test], pred))
+        #     print('accuracy over all cross-validation folds: %s' % str(accuracies))
+        mean_acc = np.mean(accuracies)
+        std = np.std(accuracies)
+        #     print('mean=%.2f std=%.2f' % (mean_acc, std))
+        accdf['n_estimators'][i] = n_estimators
+        accdf['Accuracy'][i] = mean_acc
+        accdf['std'][i] = std
+    print(accdf)
+
+
+
 
 
 # @main.command('train2')
