@@ -9,6 +9,7 @@ import time
 import traceback
 from TwitterAPI import TwitterAPI
 import pandas as pd
+from goose3 import Goose
 
 RATE_LIMIT_CODES = set([88, 130, 420, 429])
 
@@ -159,14 +160,12 @@ class Twitter:
                 sys.stderr.write('error')
                 break
 
-        for tweet in tweets:
-            try:
-                title = tweet['retweeted_status']['text']
-                break
-            except:
-                continue
+        g = Goose()
+        article = g.extract(url=url)
+        title = article.title
+        text = article.cleaned_text
 
-        df = pd.DataFrame({'source': identifier, 'title': title, 'tweets': [tweets]})
+        df = pd.DataFrame({'source': identifier, 'title': title, 'text': text, 'tweets': [tweets]})
 
         return df
 
