@@ -1,10 +1,7 @@
-<br>
-
-#Features：  
-
-###1. news text & title  
-
-----
+---
+layout: slide
+title: "1. news text & title  "
+---
 
 * analyze the news text:  
 `vec1 = TfidfVectorizer(min_df=2, max_df=.9, ngram_range=(1, 3), stop_words='english')`  

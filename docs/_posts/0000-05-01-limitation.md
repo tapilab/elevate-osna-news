@@ -1,8 +1,7 @@
-<br><br>
-
-## limitation
-
-<br>
+---
+layout: slide
+title: "limitation"
+---
 
 The fake news in training data are likely
 to have the same topic, which causes

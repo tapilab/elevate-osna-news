@@ -1,8 +1,7 @@
-<br><br>
-
-## results & conclusions:
-
-<br>
+---
+layout: slide
+title: "results & conclusions"
+---
 
 The most predictive features of
 real news are:

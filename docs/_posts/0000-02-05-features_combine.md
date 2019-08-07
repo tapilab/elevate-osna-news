@@ -1,6 +1,8 @@
-<br>
+---
+layout: slide
+title: "features combination"
+---
 
-#Features：  
 1. *news text & tittle*  
 2. *news source*  
 3. *related tweets*  
