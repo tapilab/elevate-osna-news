@@ -14,9 +14,10 @@ from sklearn.metrics import classification_report
 from scipy.sparse import csr_matrix, hstack
 import pickle
 
-# from osna.get_wordlist import get_desc
+from osna.get_wordlist import get_desc
 from sklearn.metrics.pairwise import cosine_similarity
 import matplotlib.pyplot as plt
+import time
 
 
 def load_data(datafile, checkfile):
@@ -80,10 +81,10 @@ def read_data(directory):
             df['label'] = label
             dfs.append(df)
     df = pd.concat(dfs)[['publish_date', 'source', 'text', 'title', 'tweets', 'label']]
-    # list_text = [i for i in list(df.text) if i != '']
-    # return df[df.text.isin(list_text)]
-    return df
-#
+    list_text = [i for i in list(df.text) if i != '']
+    return df[df.text.isin(list_text)]
+
+
 # # load data
 # df = load_data('..\\..\\training_data\\twitter.csv', '..\\..\\training_data\\factchecks.csv')
 # # print(df.head(), df.keys())
@@ -98,7 +99,7 @@ def train_and_predict(X, Y, lr, train=False):
     # features = np.matrix([df.timeslot, df.comments_count]).T
     # print(features)
     # X = hstack([X, features])
-    # X = X.todense()
+    X = X.todense()
     # X = features
     # load lables
     # Y = np.array(df.label)
@@ -122,14 +123,12 @@ def train_and_predict(X, Y, lr, train=False):
         accuracies = []
         report = []
         for train, test in kf.split(X):
-            # print(X[train].shape)
-            # print(Y[train].shape)
             lr.fit(X[train], Y[train])
             pred = lr.predict(X[test])
             accuracies.append(accuracy_score(Y[test], pred))
             report.append(classification_report(Y[test], pred))
-        # for r in report:
-            # print(r)
+        for r in report:
+            print(r)
         print('accuracy over all cross-validation folds: %s' % str(accuracies))
         print('mean=%.2f std=%.2f' % (np.mean(accuracies), np.std(accuracies)))
         return np.mean(accuracies)
@@ -154,19 +153,25 @@ def make_features(df):
         tweets = df.tweets.values[j]
         retweet = []
         favorite = []
-        time = []
+        time=[]
+        ##timing = []
         list_desc = []
         if len(tweets) > 1:
             for i in range(len(tweets)):
                 retweet.append(tweets[i]['retweet_count'])
                 favorite.append(tweets[i]['favorite_count'])
+                ##a=tweets[i]['created_at'][-4:]+tweets[i]['created_at'][4:7]+tweets[i]['created_at'][8:10]+tweets[i]['created_at'][11:13]
+                ##timing.append(time.strftime("%Y%m%d%H",time.strptime(a,"%Y%b%d%H")))
                 time.append(tweets[i]['created_at'][4:19] + tweets[i]['created_at'][-5:])
                 if 'description' in list(tweets[i]['user'].keys()):
                     description = get_desc(tweets[i]['user']['description'])
                     list_desc.append(description)
+            ##timing=sorted(timing)
+            ##timing=[timing[i] for i in range(len(timing)) if int(timing[i])<= int(timing[0])+200]
             avg_ret.append(sum(retweet) / len(tweets))
             avg_fav.append(sum(favorite) / len(tweets))
             time_sums = [v for k, v in Counter(time).items()]
+            ##time_sums = [v for k, v in Counter(timing).items()]
             var_time.append(np.var(time_sums))
             if len(list_desc) > 1:
                 X = vec.fit_transform(list_desc)
