@@ -4,11 +4,17 @@ title: "results & conclusions"
 ---
 
 The most predictive features of
-fake news are:
-* break 3.03
-* trump 2.95
-* lady 2.65
+real news are:
+* youtube 3.36
+* politifact 3.03
+* var_time 2.86
 
-As predicted, fake news often use
-attention seeking words like 'break' and
-mention controversial figures like Trump.
+Even being questioned, news from big
+media, such as youtube and nytimes , are
+found to be more reliable.   
+<br>
+Surprisingly, we
+found nothing related to users' descriptions
+in top features of either class. Users talking
+about real news are just like those talking
+about fake news.
