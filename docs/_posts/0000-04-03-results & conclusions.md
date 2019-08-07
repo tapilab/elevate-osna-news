@@ -12,7 +12,8 @@ real news are:
 Even being questioned, news from big
 media, such as youtube and nytimes , are
 found to be more reliable.   
-<br>
+
+
 Surprisingly, we
 found nothing related to users' descriptions
 in top features of either class. Users talking
