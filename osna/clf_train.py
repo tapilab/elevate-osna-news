@@ -16,6 +16,7 @@ import pickle
 
 from osna.get_wordlist import get_desc
 from sklearn.metrics.pairwise import cosine_similarity
+import time
 
 
 def load_data(datafile, checkfile):
@@ -150,19 +151,25 @@ def make_features(df):
         tweets = df.tweets.values[j]
         retweet = []
         favorite = []
-        time = []
+        time=[]
+        ##timing = []
         list_desc = []
         if len(tweets) > 1:
             for i in range(len(tweets)):
                 retweet.append(tweets[i]['retweet_count'])
                 favorite.append(tweets[i]['favorite_count'])
+                ##a=tweets[i]['created_at'][-4:]+tweets[i]['created_at'][4:7]+tweets[i]['created_at'][8:10]+tweets[i]['created_at'][11:13]
+                ##timing.append(time.strftime("%Y%m%d%H",time.strptime(a,"%Y%b%d%H")))
                 time.append(tweets[i]['created_at'][4:19] + tweets[i]['created_at'][-5:])
                 if 'description' in list(tweets[i]['user'].keys()):
                     description = get_desc(tweets[i]['user']['description'])
                     list_desc.append(description)
+            ##timing=sorted(timing)
+            ##timing=[timing[i] for i in range(len(timing)) if int(timing[i])<= int(timing[0])+200]
             avg_ret.append(sum(retweet) / len(tweets))
             avg_fav.append(sum(favorite) / len(tweets))
             time_sums = [v for k, v in Counter(time).items()]
+            ##time_sums = [v for k, v in Counter(timing).items()]
             var_time.append(np.var(time_sums))
             if len(list_desc) > 1:
                 X = vec.fit_transform(list_desc)
