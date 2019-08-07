@@ -1,4 +1,3 @@
-
 ---
 layout: slide
 title: "2. news source "

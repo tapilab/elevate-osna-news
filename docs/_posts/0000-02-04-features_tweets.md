@@ -1,4 +1,3 @@
-
 ---
 layout: slide
 title: "3. related tweets "
