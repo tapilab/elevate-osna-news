@@ -16,6 +16,8 @@ import pickle
 
 from osna.get_wordlist import get_desc
 from sklearn.metrics.pairwise import cosine_similarity
+import matplotlib.pyplot as plt
+import time
 
 
 def load_data(datafile, checkfile):
@@ -129,6 +131,7 @@ def train_and_predict(X, Y, lr, train=False):
             print(r)
         print('accuracy over all cross-validation folds: %s' % str(accuracies))
         print('mean=%.2f std=%.2f' % (np.mean(accuracies), np.std(accuracies)))
+        return np.mean(accuracies)
     elif train:
         lr.fit(X, Y)
         return lr
@@ -146,23 +149,29 @@ def make_features(df):
     var_time = []
     vec = TfidfVectorizer(min_df=1, ngram_range=(1, 1))
     print('Extracting features...')
-    for j in tqdm(range(len(df)), ncols=100):
+    for j in tqdm(range(len(df)), ncols=80):
         tweets = df.tweets.values[j]
         retweet = []
         favorite = []
-        time = []
+        time=[]
+        ##timing = []
         list_desc = []
         if len(tweets) > 1:
             for i in range(len(tweets)):
                 retweet.append(tweets[i]['retweet_count'])
                 favorite.append(tweets[i]['favorite_count'])
+                ##a=tweets[i]['created_at'][-4:]+tweets[i]['created_at'][4:7]+tweets[i]['created_at'][8:10]+tweets[i]['created_at'][11:13]
+                ##timing.append(time.strftime("%Y%m%d%H",time.strptime(a,"%Y%b%d%H")))
                 time.append(tweets[i]['created_at'][4:19] + tweets[i]['created_at'][-5:])
                 if 'description' in list(tweets[i]['user'].keys()):
                     description = get_desc(tweets[i]['user']['description'])
                     list_desc.append(description)
+            ##timing=sorted(timing)
+            ##timing=[timing[i] for i in range(len(timing)) if int(timing[i])<= int(timing[0])+200]
             avg_ret.append(sum(retweet) / len(tweets))
             avg_fav.append(sum(favorite) / len(tweets))
             time_sums = [v for k, v in Counter(time).items()]
+            ##time_sums = [v for k, v in Counter(timing).items()]
             var_time.append(np.var(time_sums))
             if len(list_desc) > 1:
                 X = vec.fit_transform(list_desc)
@@ -197,41 +206,84 @@ def quantization(f, bins):
             features.append([1 if c == i else 0 for c in cats])
     features = np.matrix(features).T
     return features
-
+#
+# df = read_data('..\\..\\training_data_2')
+# text = df.text
+# y = np.array(df.label)
+#
 # print('----min_df---')
-# for min_df in [1, 2, 5, 10]:
+# accdf1 = pd.DataFrame(index=['1', '2', '3','4'], columns=['index','min_df', 'Accuracy'])
+# for i, min_df in enumerate([1, 2, 5, 10]):
 #     print(min_df,'\t', end='')
 #     lr = LogisticRegression(C=1, penalty='l2')
 #     vec = TfidfVectorizer(analyzer='word',token_pattern=r'[^0-9_\W]+', min_df=min_df, max_df=1., ngram_range=(1, 1))
-#     train_and_predict(vec, lr)
+#     x = vec.fit_transform(text)
+#     acc = train_and_predict(x, y, lr)
+#     accdf1['index'][i] = i
+#     accdf1['min_df'][i] = min_df
+#     accdf1['Accuracy'][i] = acc
+# print(accdf1)
+# ax = accdf1.plot(x = 'index', y='Accuracy', legend='min_df')
 #
 # print('----max_df---')
-# for max_df in [1., .9, .8]:
+# accdf2 = pd.DataFrame(index=['1', '2', '3'], columns=['index','max_df', 'Accuracy'])
+# for i, max_df in enumerate([1., .9, .8]):
 #     print(max_df, '\t', end='')
 #     lr = LogisticRegression(C=1, penalty='l2')
 #     vec = TfidfVectorizer(analyzer='word',token_pattern=r'[^0-9_\W]+',min_df=2, max_df=max_df, ngram_range=(1, 1))
-#     train_and_predict(vec, lr)
+#     x = vec.fit_transform(text)
+#     acc = train_and_predict(x, y, lr)
+#     accdf2['index'][i] = i
+#     accdf2['max_df'][i] = max_df
+#     accdf2['Accuracy'][i] = acc
+# print(accdf2)
+# accdf2.plot(x = 'index', y='Accuracy',legend='max_df', ax=ax)
 #
 # print('----ngram_range---')
-# for ngram_range in [(1,1), (1,2), (1,3)]:
+# accdf3 = pd.DataFrame(index=['1', '2', '3'], columns=['index','ngram_range', 'Accuracy'])
+# for i, ngram_range in enumerate([(1,1), (1,2), (1,3)]):
 #     print(ngram_range, '\t', end='')
 #     lr = LogisticRegression(C=1, penalty='l2')
 #     vec = TfidfVectorizer(analyzer='word',token_pattern=r'[^0-9_\W]+',min_df=2, max_df=1., ngram_range=ngram_range)
-#     train_and_predict(vec, lr)
+#     x = vec.fit_transform(text)
+#     acc = train_and_predict(x, y, lr)
+#     accdf3['index'][i] = i
+#     accdf3['ngram_range'][i] = ngram_range
+#     accdf3['Accuracy'][i] = acc
+# print(accdf3)
+# # accdf3.plot(x = 'index', y='Accuracy',legend='ngram_range', ax=ax)
 #
 # print('----C---')
-# for C in [.1, 1, 5, 10]:
+# accdf4 = pd.DataFrame(index=['1', '2', '3','4'], columns=['index','C', 'Accuracy'])
+# for i, C in enumerate([.1, 1, 5, 10]):
 #     print(C, '\t', end='')
 #     lr = LogisticRegression(C=C, penalty='l2')
 #     vec = TfidfVectorizer(analyzer='word',token_pattern=r'[^0-9_\W]+', min_df=2, max_df=1., ngram_range=(1, 1))
-#     train_and_predict(vec, lr)
+#     x = vec.fit_transform(text)
+#     acc = train_and_predict(x, y, lr)
+#     accdf4['index'][i] = i
+#     accdf4['C'][i] = C
+#     accdf4['Accuracy'][i] = acc
+# print(accdf4)
+# accdf4.plot(x = 'index', y='Accuracy',legend='C', ax=ax)
 #
 # print('----penalty---')
-# for penalty in ['l1', 'l2']:
+# accdf5 = pd.DataFrame(index=['1', '2'], columns=['index','penalty', 'Accuracy'])
+# for i, penalty in enumerate(['l1', 'l2']):
 #     print(penalty, '\t', end='')
 #     lr = LogisticRegression(C=1, penalty=penalty)
 #     vec = TfidfVectorizer(analyzer='word',token_pattern=r'[^0-9_\W]+', min_df=2, max_df=1., ngram_range=(1, 1))
-#     train_and_predict(vec, lr)
+#     x = vec.fit_transform(text)
+#     acc = train_and_predict(x, y, lr)
+#     accdf5['index'][i] = i
+#     accdf5['penalty'][i] = penalty
+#     accdf5['Accuracy'][i] = acc
+# print(accdf5)
+# # accdf5.plot(x = 'index', y='Accuracy',legend='penalty', ax=ax)
+#
+# plt.legend()
+# plt.show()
+
 
 # lr = LogisticRegression(C=10, penalty='l2')
 # vec = TfidfVectorizer(analyzer='word', token_pattern=r'[^0-9_\W]+', min_df=2, max_df=.9, ngram_range=(1, 3))

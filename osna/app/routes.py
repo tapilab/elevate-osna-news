@@ -35,12 +35,14 @@ def index():
 
         news = get_tweets(input_field)
         if method == '1':
-            pred, proba, top_features = predict(news)
+            pred, proba, top_features, title, text = predict(news)
+            return render_template('myform.html', title='', form=form, news_title=title, news=text, pred=pred,
+                                   proba=max(proba * 100),
+                                   top_features=top_features)
         else:
-            pred, proba, top_features = predict_(news)
-
-        return render_template('myform.html', title='', form=form, news=news.title[0], pred=pred, proba=max(proba * 100),
-                               top_features=top_features)
+            pred, proba, title, text = predict_(news)
+            return render_template('myform.html', title='', form=form, news_title=title, news=text, pred=pred,
+                                   proba=max(proba * 100))
     return render_template('myform.html', title='', form=form)
 
 
@@ -52,68 +54,75 @@ def get_tweets(input_field):
 
 
 def predict(df):
-    vec2, vec3, vecf, lr = pickle.load(open(clf_path, 'rb'))
+    vec1, vec2, vec3, vecf, lr = pickle.load(open(clf_path, 'rb'))
 
     df = make_features(df)
 
     features = df.loc[:, ['avg_retweet', 'avg_favorite', 'var_time', 'var_desc']]
     features = features.to_dict('records')
 
-    # text = get_text(list(df.text))
+    text = get_text(list(df.text))
     title = get_text(list(df.title))
     source = get_source(list(df.source))
 
-    # x1 = vec1.transform(text)
+    x1 = vec1.transform(text)
     x2 = vec2.transform(title)
     x3 = vec3.transform(source)
     xf = vecf.transform(features)
 
-    x = hstack([x2, x3, xf])
-    # x = hstack([x1, x2, x3, xf])
-    # x = hstack([x1, xf])
+    x = hstack([x1, x2, x3, xf])
 
     pred = lr.predict(x)[0]
     proba = lr.predict_proba(x)[0]
 
     top_features = []
-    features = np.array(vec2.get_feature_names() + vec3.get_feature_names() + vecf.get_feature_names())
+    features = np.array(vec1.get_feature_names() + vec2.get_feature_names() + vec3.get_feature_names() + vecf.get_feature_names())
 
-    x=x.todense()
+    x = x.tocsr()
 
-    for j in np.argsort(lr.coef_[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop ste
+    if pred == 'fake':
+        coef = -lr.coef_[0]
+    else:
+        coef = lr.coef_[0]
+
+    for j in np.argsort(coef[x[0].nonzero()[1]])[::-1][:15]:  # start stop ste
         idx = x[0].nonzero()[1][j]
-        top_features.append({'feature': features[idx], 'coef': lr.coef_[0][idx]})
+        top_features.append({'feature': features[idx], 'coef': coef[idx]})
 
-    return pred, proba, top_features
+    return pred, proba, top_features, list(df.title)[0], list(df.text)[0]
 
 
 def predict_(df):
-    vec2, vec3, vecf, model = pickle.load(open(clf_path_, 'rb'))
+    keras.backend.clear_session()
+
+    vec1, vec2, vec3, vecf, model = pickle.load(open(clf_path_, 'rb'))
 
     df = make_features(df)
 
     features = df.loc[:, ['avg_retweet', 'avg_favorite', 'var_time', 'var_desc']]
     features = features.to_dict('records')
 
-    x = vecf.transform(features)
+    text = get_text(list(df.text))
+    title = get_text(list(df.title))
+    source = get_source(list(df.source))
 
-    top_features = []
+    x1 = vec1.transform(text)
+    x2 = vec2.transform(title)
+    x3 = vec3.transform(source)
+    xf = vecf.transform(features)
+
+    x = hstack([x1, x2, x3, xf]).tocsr()
 
     pred = model.predict(x)
-    proba = model.predict_proba(x)[0]
 
-    top_features = []
-    # features = vecf.get_feature_names()
-    #
-    # coef = [-lr.coef_[0], lr.coef_[0]]
-    #
-    # for j in np.argsort(coef[0][x[0].nonzero()[1]])[::-1][:3]:  # start stop step
-    #     idx = x[0].nonzero()[1][j]
-    #     top_features.append({'feature': features[idx], 'coef': coef[0][idx]})
+    proba = max(pred[0], 1-pred[0])
 
+    if pred[0] < 0.5:
+        pred = 'fake'
+    else:
+        pred = 'real'
 
-    return pred, proba, top_features
-
+    return pred, proba, list(df.title)[0], list(df.text)[0]
 
 # def predict3(df):
 #     vec1, vec2, vec3, lr = pickle.load(open(clf_path3, 'rb'))
