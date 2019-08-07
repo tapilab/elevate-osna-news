@@ -93,6 +93,8 @@ def predict(df):
 
 
 def predict_(df):
+    keras.backend.clear_session()
+
     vec1, vec2, vec3, vecf, model = pickle.load(open(clf_path_, 'rb'))
 
     df = make_features(df)
