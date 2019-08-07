@@ -43,7 +43,7 @@ clf_path_ = osna_path + os.path.sep + 'clf_.pkl'
 
 # tweet num limit
 
-num_limit = 500
+num_limit = 1500
 
 # write default config if not present.
 if not os.path.isfile(config_path):

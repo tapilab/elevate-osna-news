@@ -11,6 +11,8 @@ from TwitterAPI import TwitterAPI
 import pandas as pd
 from goose3 import Goose
 
+from osna import num_limit
+
 RATE_LIMIT_CODES = set([88, 130, 420, 429])
 
 
@@ -145,7 +147,7 @@ class Twitter:
         tweets = []
         since_id = 0
         tweets_num = 0
-        while tweets_num < 500:
+        while tweets_num < num_limit:
             response = self.request('search/tweets',{'q':identifier,'count':100,'since_id':since_id})
             if response.status_code == 200:  # success
                 items = [t for t in response]

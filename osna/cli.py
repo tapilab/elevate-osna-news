@@ -107,14 +107,14 @@ def train(directory):
     # train...
     clf = train_and_predict(x, y, lr, train=True)
 
-    top_features = []
-    features = np.array(vec1.get_feature_names() + vec2.get_feature_names() + vec3.get_feature_names() + vecf.get_feature_names())
+    features = np.array(vec1.get_feature_names() + vec2.get_feature_names() + vec3.get_feature_names()
+                        + vecf.get_feature_names())
 
-    for j in np.argsort(clf.coef_[0][x[0].nonzero()[1]])[::-1][:50]:  # start stop ste
-        idx = x[0].nonzero()[1][j]
-        top_features.append({'feature': features[idx], 'coef': clf.coef_[0][idx]})
-    print(top_features)
-    print(pd.DataFrame(top_features))
+    coef = [-clf.coef_[0], clf.coef_[0]]
+    for ci, class_name in enumerate(clf.classes_):
+        print('top features for class %s' % class_name)
+        for fi in coef[ci].argsort()[::-1][:50]:  # descending order.
+            print('%20s\t%.2f' % (features[fi], coef[ci][fi]))
 
     # save the classifier
     pickle.dump((vec1, vec2, vec3, vecf, clf), open(clf_path, 'wb'))

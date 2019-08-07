@@ -80,9 +80,14 @@ def predict(df):
 
     x = x.tocsr()
 
-    for j in np.argsort(lr.coef_[0][x[0].nonzero()[1]])[::-1][:15]:  # start stop ste
+    if pred == 'fake':
+        coef = -lr.coef_[0]
+    else:
+        coef = lr.coef_[0]
+
+    for j in np.argsort(coef[x[0].nonzero()[1]])[::-1][:15]:  # start stop ste
         idx = x[0].nonzero()[1][j]
-        top_features.append({'feature': features[idx], 'coef': lr.coef_[0][idx]})
+        top_features.append({'feature': features[idx], 'coef': coef[idx]})
 
     return pred, proba, top_features, list(df.title)[0], list(df.text)[0]
 
