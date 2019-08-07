@@ -1,10 +1,8 @@
-<br>
 
-#Features：  
-
-###2. news source  
-
-----
+---
+layout: slide
+title: "2. news source "
+---
 
 * analyze the news source:  
 

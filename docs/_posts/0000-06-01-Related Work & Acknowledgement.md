@@ -1,8 +1,7 @@
-<br><br>
-
-## Related Work & Acknowledgement
-
-<br>
+---
+layout: slide
+title: "Related Work & Acknowledgement"
+---
 
 
 - Zhu ZG, Liu MK, Zhao KX.:

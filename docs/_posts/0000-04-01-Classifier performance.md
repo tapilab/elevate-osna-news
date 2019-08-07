@@ -1,7 +1,7 @@
-<br><br>
-
-##Classifier performance
-
+---
+layout: slide
+title: "Classifier performance"
+---
 <br>
 
 |                   |    F1    | Precision| Recall|

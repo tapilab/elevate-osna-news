@@ -1,10 +1,9 @@
-<br>
 
-#Features：  
+---
+layout: slide
+title: "3. related tweets "
+---
 
-###3. related tweets  
-
-----
 
 * get features of the tweets:  
 `df['avg_retweet'] = avg_ret`  
