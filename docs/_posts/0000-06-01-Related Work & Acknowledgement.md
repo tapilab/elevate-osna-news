@@ -15,5 +15,6 @@ Fake News and Fake Users on Twitter,
 126 (2018) 451 461
 
 Acknowledgement: 
+
 - Prof. Culotta
 - IIT faculty and staff
